@@ -1,5 +1,7 @@
 # PLF110 Earpiece Dual Speaker v2.0.6
 
+English | [简体中文](README.zh-CN.md) | [Bahasa Indonesia](README.id.md)
+
 KernelSU/Magisk module tested on the OnePlus PLF110 Android 16 firmware.
 
 It assigns both `AUDIO_DEVICE_OUT_SPEAKER` and
