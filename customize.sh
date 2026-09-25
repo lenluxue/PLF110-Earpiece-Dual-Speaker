@@ -1,7 +1,7 @@
 #!/system/bin/sh
 
 ui_print " "
-ui_print "  PLF110 Earpiece Dual Speaker v2.0.6"
+ui_print "  PLF110 Earpiece/Speaker Stereo v2.1.0"
 ui_print " "
 
 device=$(getprop ro.product.device)
@@ -34,10 +34,11 @@ if [ ! -f "$BACKUP" ]; then
     esac
 fi
 
-ui_print "- Media output: speaker + earpiece"
+ui_print "- Stereo output: earpiece left + bottom AW88265 speaker right"
 ui_print "- Earpiece media index is held at the media maximum 160"
 ui_print "- Handset hardware gain: maximum vendor index (0)"
 ui_print "- Bottom speaker hardware attenuation: Lineout Volume 31 (-40 dB vendor sentinel)"
+ui_print "- AW88265 I2S channel select: right (CHSEL=2)"
 ui_print "- AW882xx bottom smart-PA attenuation: 96 steps (-12 dB)"
 ui_print "- Gain table overlay disabled for MediaTek HAL stability"
 ui_print "- Reboot after installation"

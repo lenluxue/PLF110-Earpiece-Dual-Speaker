@@ -1,16 +1,20 @@
-# PLF110 Earpiece Dual Speaker v2.0.6
+# PLF110 Earpiece/Speaker Stereo v2.1.0
 
 [English](README.md) | [简体中文](README.zh-CN.md) | Bahasa Indonesia
 
-Modul KernelSU/Magisk ini telah diuji pada firmware Android 16 untuk OnePlus PLF110.
+Modul KernelSU/Magisk ini ditujukan untuk OnePlus PLF110 Android 16 yang telah di-root.
 
-Modul menetapkan `AUDIO_DEVICE_OUT_SPEAKER` dan `AUDIO_DEVICE_OUT_EARPIECE` sekaligus ke strategi produk media yang sedang aktif (strategi 5 pada firmware Android 16 ini). Indeks media earpiece tetap ditautkan, sehingga perubahan volume media memengaruhi kedua keluaran secara bersamaan. Volume media perangkat keras earpiece dipertahankan pada nilai maksimum (indeks 160) untuk mengimbangi perbedaan kenyaringan yang masih terasa dengan speaker bawah.
+Modul menetapkan `AUDIO_DEVICE_OUT_SPEAKER` dan `AUDIO_DEVICE_OUT_EARPIECE` ke strategi media 5, menjaga indeks media earpiece tetap mengikuti tombol volume media, dan mengatur amplifier pintar AW88265 agar memilih kanal I2S kanan. Earpiece tetap memakai jalur handset mono bawaan. Nada uji yang disertakan memeriksa apakah firmware mengirim kanal kiri saja ke jalur tersebut atau mencampur kedua kanal menjadi mono. Ini adalah pengujian pemisahan kanal, bukan efek surround virtual.
 
 Pasang berkas ZIP melalui KernelSU atau Magisk, lalu mulai ulang perangkat. Tombol aksi modul dapat mengaktifkan atau menonaktifkan rute speaker ganda tanpa perlu memulai ulang. Saat modul dihapus, rute tersebut dibersihkan dan indeks perangkat earpiece yang disimpan pada pemasangan pertama akan dipulihkan.
 
-Smart amplifier AW882xx pada speaker bawah diredam secara terpisah melalui kontrol mixer `aw_dev_0_volume`. Nilai bawaannya adalah `96`, setara dengan peredaman 12 dB karena driver AW88265 menggunakan langkah 0,125 dB (`0` adalah pengaturan paling keras). Proses pemantau akan menerapkan kembali nilai ini jika audio HAL mengganti profil. Saat modul aktif, earpiece menggunakan indeks aman maksimum dari kontrol vendor `Handset Volume`, yaitu `0`. Kontrol tersebut juga digunakan bersama oleh panggilan dan pemutaran pesan suara, sehingga jalur audio tersebut mungkin ikut menjadi lebih keras. Saat modul dinonaktifkan atau dihapus, nilai mixer yang tersimpan akan dipulihkan jika valid untuk kontrol perangkat keras.
+Pemilihan kanal AW88265 memakai field `CHSEL` yang ditentukan driver pada register `I2SCTRL1 (0x06)` (Left=`1`, Right=`2`). Modul menyimpan nilai awal, menerapkan kanal kanan selama aktif, lalu memulihkannya ketika dinonaktifkan atau dihapus. Kernel, Audio HAL, dan tabel gain vendor tidak diubah.
 
-Perubahan tabel gain dinonaktifkan pada firmware ini karena HAL MediaTek mengalami crash saat memuat ulang tabel yang telah diubah. Modul mempertahankan tabel gain bawaan dan hanya mengatur keseimbangan melalui kontrol volume perangkat secara langsung serta kontrol AW882xx.
+Smart amplifier AW882xx pada speaker bawah tetap diredam secara terpisah melalui kontrol mixer `aw_dev_0_volume`. Nilai bawaannya `96`, setara dengan -12 dB (langkah 0,125 dB; `0` adalah pengaturan paling keras). Proses pemantau menerapkan ulang nilai ini setelah jalur audio dimulai ulang. Earpiece memakai indeks aman maksimum dari kontrol vendor `Handset Volume`, yaitu `0`; kontrol ini juga digunakan bersama oleh panggilan dan pesan suara, sehingga jalur tersebut dapat ikut lebih keras. Nilai mixer valid yang tersimpan dipulihkan saat modul dinonaktifkan atau dihapus.
+
+Perubahan tabel gain tetap dinonaktifkan karena HAL MediaTek mengalami crash saat memuat ulang tabel yang diubah. Modul mempertahankan tabel gain bawaan.
+
+Putar `左右声道测试.wav` pada volume media rendah. Nada 440 Hz pertama adalah kanal kiri; nada 880 Hz berikutnya adalah kanal kanan. Untuk keluaran terpisah, nada pertama seharusnya hanya terdengar dari earpiece dan nada kedua dari speaker bawah. Jika earpiece juga memainkan nada kedua, rute HAL sedang mencampur stereo menjadi mono dan memerlukan perubahan HAL/kebijakan terpisah.
 
 Untuk menyetel media saja, tulis offset numerik ke `/data/adb/plf110_earpiece_dual_speaker/earpiece_offset`, lalu tekan tombol aksi modul; offset bawaan adalah 160 langkah volume media.
 

@@ -19,6 +19,10 @@ SMARTPA_CONTROL="aw_dev_0_volume"
 SMARTPA_BACKUP="$STATE_DIR/smartpa_volume.original"
 SMARTPA_ATTENUATION_FILE="$STATE_DIR/smartpa_attenuation"
 SMARTPA_DEFAULT_ATTENUATION=96
+AW_REG_FILE=/sys/bus/i2c/devices/6-0034/reg
+AW_CHANNEL_BACKUP="$STATE_DIR/aw_channel.original"
+AW_CHANNEL_MASK=3072
+AW_CHANNEL_RIGHT=2048
 
 default_offset=160
 
@@ -103,6 +107,56 @@ get_smartpa_volume() {
 set_smartpa_volume() {
     [ -x "$MIXER_TOOL" ] || return 1
     "$MIXER_TOOL" set "$SMARTPA_CONTROL" "$1" >/dev/null 2>&1
+}
+
+get_aw_i2s_reg() {
+    [ -r "$AW_REG_FILE" ] || return 1
+    value=$(/system/bin/grep '^reg:0x06=' "$AW_REG_FILE" 2>/dev/null | /system/bin/cut -d= -f2)
+    case "$value" in
+        0x[0-9a-fA-F]*) ;;
+        *) return 1 ;;
+    esac
+    echo $((value))
+}
+
+set_aw_channel_bits() {
+    requested=$1
+    case "$requested" in
+        0|1024|2048|3072) ;;
+        *) return 1 ;;
+    esac
+
+    current=$(get_aw_i2s_reg) || return 1
+    target=$(((current & 0xf3ff) | requested))
+    if [ "$target" -ne "$current" ]; then
+        printf '6 %04x\n' "$target" > "$AW_REG_FILE" || return 1
+    fi
+
+    updated=$(get_aw_i2s_reg) || return 1
+    [ $((updated & AW_CHANNEL_MASK)) -eq "$requested" ]
+}
+
+ensure_aw_right_channel() {
+    [ -e "$AW_REG_FILE" ] || return 1
+
+    if [ ! -f "$AW_CHANNEL_BACKUP" ]; then
+        current=$(get_aw_i2s_reg) || return 1
+        printf '%s\n' "$((current & AW_CHANNEL_MASK))" > "$AW_CHANNEL_BACKUP"
+    fi
+
+    current=$(get_aw_i2s_reg) || return 1
+    if [ $((current & AW_CHANNEL_MASK)) -ne "$AW_CHANNEL_RIGHT" ]; then
+        set_aw_channel_bits "$AW_CHANNEL_RIGHT" || return 1
+        echo "AW88265 I2S input channel set to right"
+    fi
+}
+
+restore_aw_channel() {
+    original=$(cat "$AW_CHANNEL_BACKUP" 2>/dev/null)
+    case "$original" in
+        0|1024|2048|3072) set_aw_channel_bits "$original" ;;
+        *) return 0 ;;
+    esac
 }
 
 ensure_handset_gain() {
@@ -194,6 +248,7 @@ monitor_volume() {
         ensure_handset_gain
         ensure_lineout_attenuation
         ensure_smartpa_attenuation
+        ensure_aw_right_channel
         sync_earpiece_volume
         sleep 0.5
     done
@@ -207,6 +262,7 @@ case "$1" in
         ensure_handset_gain || exit $?
         ensure_lineout_attenuation || exit $?
         ensure_smartpa_attenuation || exit $?
+        ensure_aw_right_channel || exit $?
         sync_earpiece_volume || exit $?
         ;;
     sync)
@@ -216,6 +272,7 @@ case "$1" in
         monitor_volume
         ;;
     clear)
+        restore_aw_channel
         run_route clear
         clear_legacy_route >/dev/null 2>&1 || true
         restore_earpiece_volume

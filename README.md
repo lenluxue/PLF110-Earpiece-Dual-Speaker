@@ -1,19 +1,26 @@
-# PLF110 Earpiece Dual Speaker v2.0.6
+# PLF110 Earpiece/Speaker Stereo v2.1.0
 
 English | [简体中文](README.zh-CN.md) | [Bahasa Indonesia](README.id.md)
 
-KernelSU/Magisk module tested on the OnePlus PLF110 Android 16 firmware.
+KernelSU/Magisk module for the rooted OnePlus PLF110 Android 16 firmware.
 
-It assigns both `AUDIO_DEVICE_OUT_SPEAKER` and
-`AUDIO_DEVICE_OUT_EARPIECE` to the current media product strategy (strategy 5
-on this Android 16 firmware). The earpiece media
-indices are kept linked, so changing the media volume changes both outputs
-together. The earpiece is held at the hardware media maximum (index 160) to
-compensate for the remaining perceived speaker loudness.
+It assigns `AUDIO_DEVICE_OUT_SPEAKER` and `AUDIO_DEVICE_OUT_EARPIECE` to media
+strategy 5, keeps the earpiece media index linked to the media-volume slider,
+and programs the AW88265 smart amplifier to select the right I2S channel. The
+receiver remains on the stock mono handset path. The included test tone checks
+whether this firmware feeds that path from the left channel or folds both
+channels to mono. This is a channel-separation test, not a virtual surround
+effect.
 
 Install the ZIP in KernelSU or Magisk and reboot. The module action button
 toggles the dual route without a reboot. Uninstalling clears the route and
 restores the earpiece device index saved during the first installation.
+
+The AW88265 channel selection uses the driver's `CHSEL` field in `I2SCTRL1`
+(`0x06`): left is `1`, right is `2`. The module saves the original field,
+reapplies right while active, and restores the original selection when
+disabled or uninstalled. It does not modify the kernel, audio HAL, or vendor
+gain tables.
 
 The bottom AW882xx smart amplifier is attenuated independently through its
 `aw_dev_0_volume` mixer control. The default value is `96`, which is 12 dB of
@@ -24,9 +31,15 @@ The earpiece uses the vendor `Handset Volume` maximum safe index
 playback, so those paths may also be louder. Disabling or uninstalling restores
 the saved mixer values when they are valid for the hardware control.
 
-Gain-table modification is disabled on this firmware: the MediaTek HAL crashes
-when it reloads the modified table. The module leaves the stock gain tables in
-place and adjusts balance only with live device-volume and AW882xx controls.
+Gain-table modification remains disabled on this firmware because the MediaTek
+HAL crashes when it reloads a modified table. The module leaves the stock gain
+tables in place.
+
+Play `左右声道测试.wav` at a low media volume. The first 440 Hz tone is left;
+the following 880 Hz tone is right. For separated output, the first tone should
+come from the earpiece and the second from the bottom speaker. If the earpiece
+also plays the second tone, its HAL route is folding stereo to mono and needs a
+separate HAL/policy change.
 
 To tune only media, write a numeric offset to
 `/data/adb/plf110_earpiece_dual_speaker/earpiece_offset` and toggle the module

@@ -1,6 +1,6 @@
 id=plf110_earpiece_dual_speaker
 name=PLF110 Earpiece Dual Speaker
-version=2.0.6
-versionCode=206
+version=2.1.0
+versionCode=210
 author=Codex
-description=Routes media to speaker and earpiece with AW882xx bottom-speaker balancing and matched volume tracking.
+description=Stereo channel separation test: earpiece receiver plus AW88265 right channel.
