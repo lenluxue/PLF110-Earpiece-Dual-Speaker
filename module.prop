@@ -1,6 +1,6 @@
 id=plf110_earpiece_dual_speaker
 name=PLF110 Earpiece Dual Speaker
-version=2.1.0
-versionCode=210
+version=2.3.0
+versionCode=230
 author=Codex
-description=Stereo channel separation test: earpiece receiver plus AW88265 right channel.
+description=Stable stereo route with right AW88265 and bottom speaker -14 dB.

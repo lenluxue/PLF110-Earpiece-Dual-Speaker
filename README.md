@@ -1,4 +1,4 @@
-# PLF110 Earpiece/Speaker Stereo v2.1.0
+# PLF110 Earpiece/Speaker Stereo v2.3.0
 
 English | [简体中文](README.zh-CN.md) | [Bahasa Indonesia](README.id.md)
 
@@ -7,10 +7,18 @@ KernelSU/Magisk module for the rooted OnePlus PLF110 Android 16 firmware.
 It assigns `AUDIO_DEVICE_OUT_SPEAKER` and `AUDIO_DEVICE_OUT_EARPIECE` to media
 strategy 5, keeps the earpiece media index linked to the media-volume slider,
 and programs the AW88265 smart amplifier to select the right I2S channel. The
-receiver remains on the stock mono handset path. The included test tone checks
-whether this firmware feeds that path from the left channel or folds both
-channels to mono. This is a channel-separation test, not a virtual surround
-effect.
+module also overlays the active audio policy so the earpiece endpoint stays
+stereo; this prevents AudioFlinger from folding left and right before they
+reach the two physical outputs.
+
+The firmware's Oplus Upmix and spatializer libraries are present, but this
+module does not force-load them because doing so can crash the MediaTek audio
+HAL. The module therefore focuses on stable stereo routing and hardware channel
+selection.
+
+The receiver path disables its `ADDA_DL_CH2/CH4 -> DL0_CH2` right-channel
+switches, while the bottom AW88265 path keeps `I2SOUT4_CH2 -> DL0_CH2` for the
+right channel.
 
 Install the ZIP in KernelSU or Magisk and reboot. The module action button
 toggles the dual route without a reboot. Uninstalling clears the route and
@@ -23,7 +31,7 @@ disabled or uninstalled. It does not modify the kernel, audio HAL, or vendor
 gain tables.
 
 The bottom AW882xx smart amplifier is attenuated independently through its
-`aw_dev_0_volume` mixer control. The default value is `96`, which is 12 dB of
+`aw_dev_0_volume` mixer control. The default value is `112`, which is 14 dB of
 attenuation because the AW88265 driver uses 0.125 dB steps (`0` is the loudest
 setting). The monitor reapplies this value if the audio HAL changes profiles.
 The earpiece uses the vendor `Handset Volume` maximum safe index
@@ -37,17 +45,15 @@ tables in place.
 
 Play `左右声道测试.wav` at a low media volume. The first 440 Hz tone is left;
 the following 880 Hz tone is right. For separated output, the first tone should
-come from the earpiece and the second from the bottom speaker. If the earpiece
-also plays the second tone, its HAL route is folding stereo to mono and needs a
-separate HAL/policy change.
+come from the earpiece and the second from the bottom speaker.
 
 To tune only media, write a numeric offset to
 `/data/adb/plf110_earpiece_dual_speaker/earpiece_offset` and toggle the module
-action; the default offset is `160` media steps.
+action; the default offset is `0` media steps.
 
 To tune the left/right perceived balance without rebuilding, write an integer
 from `0` to `720` to
 `/data/adb/plf110_earpiece_dual_speaker/smartpa_attenuation`. Each step lowers
 only the bottom speaker by 0.125 dB; for example `24` is -3 dB, `32` is -4 dB,
-`40` is -5 dB, `48` is -6 dB, `64` is -8 dB, `80` is -10 dB, and `96` is
--12 dB. The running monitor applies the new value within one second.
+`40` is -5 dB, `48` is -6 dB, `64` is -8 dB, `80` is -10 dB, and `112` is
+-14 dB. The running monitor applies the new value within one second.

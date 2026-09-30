@@ -12,7 +12,7 @@ if [ -f "$DISABLED" ]; then
     fi
     if sh "$MODDIR/audio_ctl.sh" apply; then
         (sh "$MODDIR/audio_ctl.sh" monitor >> "$STATE_DIR/service.log" 2>&1 &)
-        echo "Stereo route enabled: earpiece left, bottom speaker right."
+        echo "Stereo route enabled: earpiece left, bottom speaker right at -14 dB."
     else
         echo "Failed to enable dual speaker. See $STATE_DIR/service.log."
         exit 1

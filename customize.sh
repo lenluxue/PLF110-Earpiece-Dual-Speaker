@@ -1,7 +1,7 @@
 #!/system/bin/sh
 
 ui_print " "
-ui_print "  PLF110 Earpiece/Speaker Stereo v2.1.0"
+ui_print "  PLF110 Earpiece/Speaker Stereo v2.3.0"
 ui_print " "
 
 device=$(getprop ro.product.device)
@@ -19,6 +19,8 @@ esac
 STATE_DIR=/data/adb/plf110_earpiece_dual_speaker
 BACKUP="$STATE_DIR/earpiece_volume.original"
 mkdir -p "$STATE_DIR"
+printf '112\n' > "$STATE_DIR/smartpa_attenuation"
+printf '0\n' > "$STATE_DIR/earpiece_offset"
 
 if [ ! -f "$BACKUP" ]; then
     raw=$(/system/bin/settings get system volume_music_earpiece 2>/dev/null)
@@ -35,11 +37,13 @@ if [ ! -f "$BACKUP" ]; then
 fi
 
 ui_print "- Stereo output: earpiece left + bottom AW88265 speaker right"
-ui_print "- Earpiece media index is held at the media maximum 160"
+ui_print "- Earpiece media index follows the speaker media index"
 ui_print "- Handset hardware gain: maximum vendor index (0)"
-ui_print "- Bottom speaker hardware attenuation: Lineout Volume 31 (-40 dB vendor sentinel)"
+ui_print "- Legacy Lineout Volume override is restored, not forced"
 ui_print "- AW88265 I2S channel select: right (CHSEL=2)"
-ui_print "- AW882xx bottom smart-PA attenuation: 96 steps (-12 dB)"
+ui_print "- AW882xx bottom smart-PA attenuation: 112 steps (-14 dB)"
+ui_print "- Receiver route: left only; bottom AW88265 route: right only"
+ui_print "- Earpiece policy profile is stereo to preserve the left channel"
 ui_print "- Gain table overlay disabled for MediaTek HAL stability"
 ui_print "- Reboot after installation"
 ui_print "- The module action button toggles the route immediately"
@@ -49,7 +53,9 @@ set_perm "$MODPATH/customize.sh" 0 0 0755
 set_perm "$MODPATH/service.sh" 0 0 0755
 set_perm "$MODPATH/action.sh" 0 0 0755
 set_perm "$MODPATH/audio_ctl.sh" 0 0 0755
+set_perm_recursive "$MODPATH/my_product" 0 0 0755 0644
 set_perm "$MODPATH/patch_gain.sh" 0 0 0755
 set_perm "$MODPATH/post-fs-data.sh" 0 0 0755
 set_perm "$MODPATH/mixer_set_int" 0 0 0755
+set_perm "$MODPATH/mixer_set_route" 0 0 0755
 set_perm "$MODPATH/uninstall.sh" 0 0 0755

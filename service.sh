@@ -8,6 +8,14 @@ exec >> "$LOG" 2>&1
 
 echo "[$(date '+%F %T')] service start"
 
+POLICY=/vendor/etc/audio_policy_configuration_a2dp_offload_enable_cg_enable.xml
+if /system/bin/grep -A5 'tagName="Earpiece"' "$POLICY" 2>/dev/null | /system/bin/grep -q 'AUDIO_CHANNEL_OUT_STEREO'; then
+    echo "[$(date '+%F %T')] stereo earpiece policy active"
+else
+    echo "[$(date '+%F %T')] ERROR: stereo earpiece policy is not active"
+    exit 1
+fi
+
 i=0
 while [ "$i" -lt 60 ]; do
     if /system/bin/service check audio 2>&1 | /system/bin/grep -q 'found'; then
@@ -47,7 +55,7 @@ applied=0
 while [ "$attempt" -le 6 ]; do
     echo "[$(date '+%F %T')] apply attempt $attempt"
     if sh "$MODDIR/audio_ctl.sh" apply; then
-        echo "[$(date '+%F %T')] dual route active; AW882xx bottom-speaker balance control active"
+        echo "[$(date '+%F %T')] stereo route active; earpiece=left, AW88265=right, bottom=-14 dB"
         applied=1
         break
     fi

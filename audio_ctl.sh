@@ -9,6 +9,7 @@ OFFSET_FILE="$STATE_DIR/earpiece_offset"
 APPLIED_FILE="$STATE_DIR/earpiece_volume.applied"
 MONITOR_LOCK="$STATE_DIR/monitor.lock"
 MIXER_TOOL="$MODDIR/mixer_set_int"
+ROUTE_TOOL="$MODDIR/mixer_set_route"
 HANDSET_CONTROL="Handset Volume"
 HANDSET_BACKUP="$STATE_DIR/handset_volume.original"
 HANDSET_GAIN_INDEX=0
@@ -18,13 +19,15 @@ LINEOUT_ATTENUATION_INDEX=31
 SMARTPA_CONTROL="aw_dev_0_volume"
 SMARTPA_BACKUP="$STATE_DIR/smartpa_volume.original"
 SMARTPA_ATTENUATION_FILE="$STATE_DIR/smartpa_attenuation"
-SMARTPA_DEFAULT_ATTENUATION=96
+SMARTPA_DEFAULT_ATTENUATION=112
 AW_REG_FILE=/sys/bus/i2c/devices/6-0034/reg
 AW_CHANNEL_BACKUP="$STATE_DIR/aw_channel.original"
 AW_CHANNEL_MASK=3072
 AW_CHANNEL_RIGHT=2048
+RCV_CH2_A="ADDA_DL_CH2 DL0_CH2"
+RCV_CH2_B="ADDA_DL_CH4 DL0_CH2"
 
-default_offset=160
+default_offset=0
 
 get_offset() {
     value=$(cat "$OFFSET_FILE" 2>/dev/null)
@@ -110,13 +113,31 @@ set_smartpa_volume() {
 }
 
 get_aw_i2s_reg() {
-    [ -r "$AW_REG_FILE" ] || return 1
-    value=$(/system/bin/grep '^reg:0x06=' "$AW_REG_FILE" 2>/dev/null | /system/bin/cut -d= -f2)
+    reg_file=$(find_aw_reg_file) || return 1
+    line=$(/system/bin/grep '^reg:0x06=' "$reg_file" 2>/dev/null)
+    value=${line#*=}
     case "$value" in
         0x[0-9a-fA-F]*) ;;
         *) return 1 ;;
     esac
     echo $((value))
+}
+
+find_aw_reg_file() {
+    if [ -r "$AW_REG_FILE" ] &&
+        /system/bin/grep -q '^reg:0x06=' "$AW_REG_FILE" 2>/dev/null; then
+        echo "$AW_REG_FILE"
+        return 0
+    fi
+
+    for candidate in /sys/bus/i2c/devices/*/reg; do
+        [ -r "$candidate" ] || continue
+        if /system/bin/grep -q '^reg:0x06=' "$candidate" 2>/dev/null; then
+            echo "$candidate"
+            return 0
+        fi
+    done
+    return 1
 }
 
 set_aw_channel_bits() {
@@ -126,10 +147,11 @@ set_aw_channel_bits() {
         *) return 1 ;;
     esac
 
+    reg_file=$(find_aw_reg_file) || return 1
     current=$(get_aw_i2s_reg) || return 1
     target=$(((current & 0xf3ff) | requested))
     if [ "$target" -ne "$current" ]; then
-        printf '6 %04x\n' "$target" > "$AW_REG_FILE" || return 1
+        printf '6 %04x\n' "$target" > "$reg_file" || return 1
     fi
 
     updated=$(get_aw_i2s_reg) || return 1
@@ -137,7 +159,7 @@ set_aw_channel_bits() {
 }
 
 ensure_aw_right_channel() {
-    [ -e "$AW_REG_FILE" ] || return 1
+    find_aw_reg_file >/dev/null || return 1
 
     if [ ! -f "$AW_CHANNEL_BACKUP" ]; then
         current=$(get_aw_i2s_reg) || return 1
@@ -159,6 +181,54 @@ restore_aw_channel() {
     esac
 }
 
+ensure_receiver_control_left() {
+    control=$1
+    key=$(printf '%s' "$control" | sed 's/[^A-Za-z0-9]/_/g')
+    backup="$STATE_DIR/rcv_${key}.original"
+    current=$(get_rcv_control "$control") || return 0
+    case "$current" in
+        ''|*[!0-9]*) return 0 ;;
+    esac
+    if [ ! -f "$backup" ]; then
+        printf '%s\n' "$current" > "$backup"
+    fi
+    if [ "$current" -ne 0 ]; then
+        set_rcv_control "$control" 0 || return 1
+        echo "receiver right-channel route disabled: $control ($current -> 0)"
+    fi
+}
+
+get_rcv_control() {
+    [ -x "$ROUTE_TOOL" ] || return 1
+    "$ROUTE_TOOL" get "$1" 2>/dev/null
+}
+
+set_rcv_control() {
+    [ -x "$ROUTE_TOOL" ] || return 1
+    "$ROUTE_TOOL" set "$1" "$2" >/dev/null 2>&1
+}
+
+ensure_receiver_left_channel() {
+    [ -x "$MIXER_TOOL" ] || return 1
+    ensure_receiver_control_left "$RCV_CH2_A" || return 1
+    ensure_receiver_control_left "$RCV_CH2_B" || return 1
+}
+
+restore_receiver_control() {
+    control=$1
+    key=$(printf '%s' "$control" | sed 's/[^A-Za-z0-9]/_/g')
+    original=$(cat "$STATE_DIR/rcv_${key}.original" 2>/dev/null)
+    case "$original" in
+        ''|*[!0-9]*) return 0 ;;
+        *) set_rcv_control "$control" "$original" ;;
+    esac
+}
+
+restore_receiver_channel() {
+    restore_receiver_control "$RCV_CH2_A"
+    restore_receiver_control "$RCV_CH2_B"
+}
+
 ensure_handset_gain() {
     [ -x "$MIXER_TOOL" ] || return 1
 
@@ -177,21 +247,16 @@ ensure_handset_gain() {
     fi
 }
 
-ensure_lineout_attenuation() {
-    [ -x "$MIXER_TOOL" ] || return 1
-
-    if [ ! -f "$LINEOUT_BACKUP" ]; then
-        original=$(get_lineout_volume) || return 1
-        case "$original" in
-            ''|*[!0-9]*) return 1 ;;
-        esac
-        printf '%s\n' "$original" > "$LINEOUT_BACKUP"
-    fi
-
-    current=$(get_lineout_volume) || return 1
-    if [ "$current" != "$LINEOUT_ATTENUATION_INDEX" ]; then
-        set_lineout_volume "$LINEOUT_ATTENUATION_INDEX" || return 1
-        echo "lineout hardware gain set: $current -> $LINEOUT_ATTENUATION_INDEX"
+restore_legacy_lineout() {
+    original=$(cat "$LINEOUT_BACKUP" 2>/dev/null)
+    case "$original" in
+        ''|*[!0-9]*) return 0 ;;
+    esac
+    [ "$original" -le 31 ] || return 0
+    current=$(get_lineout_volume) || return 0
+    if [ "$current" != "$original" ]; then
+        set_lineout_volume "$original" || return 1
+        echo "legacy lineout override restored: $current -> $original"
     fi
 }
 
@@ -246,9 +311,9 @@ monitor_volume() {
     mkdir "$MONITOR_LOCK" 2>/dev/null || return 0
     while [ -d "$MODDIR" ] && [ -d "$STATE_DIR" ] && [ ! -f "$STATE_DIR/disabled" ]; do
         ensure_handset_gain
-        ensure_lineout_attenuation
         ensure_smartpa_attenuation
         ensure_aw_right_channel
+        ensure_receiver_left_channel
         sync_earpiece_volume
         sleep 0.5
     done
@@ -260,9 +325,10 @@ case "$1" in
         clear_legacy_route >/dev/null 2>&1 || true
         run_route keep || exit $?
         ensure_handset_gain || exit $?
-        ensure_lineout_attenuation || exit $?
+        restore_legacy_lineout || exit $?
         ensure_smartpa_attenuation || exit $?
         ensure_aw_right_channel || exit $?
+        ensure_receiver_left_channel || exit $?
         sync_earpiece_volume || exit $?
         ;;
     sync)
@@ -273,6 +339,7 @@ case "$1" in
         ;;
     clear)
         restore_aw_channel
+        restore_receiver_channel
         run_route clear
         clear_legacy_route >/dev/null 2>&1 || true
         restore_earpiece_volume
@@ -281,11 +348,7 @@ case "$1" in
             ''|*[!0-9]*) ;;
             *) set_handset_volume "$original" ;;
         esac
-        original=$(cat "$LINEOUT_BACKUP" 2>/dev/null)
-        case "$original" in
-            ''|*[!0-9]*) ;;
-            *) [ "$original" -le 31 ] && set_lineout_volume "$original" ;;
-        esac
+        restore_legacy_lineout
         original=$(cat "$SMARTPA_BACKUP" 2>/dev/null)
         case "$original" in
             ''|*[!0-9]*) ;;
