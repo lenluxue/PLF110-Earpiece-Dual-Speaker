@@ -13,8 +13,7 @@ POLICY=/my_product/etc/audio_policy_configuration_a2dp_offload_enable_cg_enable.
 if /system/bin/grep -A5 'tagName="Earpiece"' "$POLICY" 2>/dev/null | /system/bin/grep -q 'AUDIO_CHANNEL_OUT_STEREO'; then
     echo "[$(date '+%F %T')] stereo earpiece policy active"
 else
-    echo "[$(date '+%F %T')] ERROR: stereo earpiece policy is not active"
-    exit 1
+    echo "[$(date '+%F %T')] WARNING: stereo earpiece policy is not active; continuing with runtime route"
 fi
 
 i=0

@@ -1,4 +1,4 @@
-# PLF110 听筒/底部扬声器空间立体声 v2.4.0
+# PLF110 听筒/底部扬声器空间立体声 v2.4.1
 
 [English](README.md) | 简体中文 | [Bahasa Indonesia](README.id.md)
 
