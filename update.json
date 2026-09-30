@@ -1,6 +1,6 @@
 {
-  "version": "2.4.5",
-  "versionCode": 245,
-  "zipUrl": "https://github.com/lenluxue/PLF110-Earpiece-Dual-Speaker/releases/download/2.4.5/PLF110-Earpiece-Dual-Speaker-v2.4.5.zip",
-  "changelog": "Disable the crashing vendor spatializer while keeping stable left/right dual-speaker output."
+  "version": "2.4.6",
+  "versionCode": 246,
+  "zipUrl": "https://github.com/lenluxue/PLF110-Earpiece-Dual-Speaker/releases/download/2.4.6/PLF110-Earpiece-Dual-Speaker-v2.4.6.zip",
+  "changelog": "Remove redundant spatializer policy and feature code; keep stable left/right dual-speaker output."
 }

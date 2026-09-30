@@ -99,14 +99,6 @@
                     <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
                              samplingRates="44100 48000" channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
                 </mixPort>
-                <!-- Wenjiang.Wang@MULTIMEDIA.AUDIOSERVER.AUDIOPOLICY, 2022/04/25, Add spatializer -->
-                <mixPort name="spatializer" role="source"
-                        flags="AUDIO_OUTPUT_FLAG_SPATIALIZER">
-                    <profile name="" format="AUDIO_FORMAT_PCM_32_BIT"
-                             samplingRates="48000"
-                             channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
-                </mixPort>
-                <!-- Add spatializer End -->
                 <mixPort name="hdmi_mix_output" role="source">
                 </mixPort>
                 <mixPort name="primary input" role="sink" maxOpenCount="1" maxActiveCount="1">
@@ -319,17 +311,17 @@
             <!-- route declaration, i.e. list all available sources for a given sink -->
             <routes>
                 <route type="mix" sink="Earpiece"
-                       sources="primary output,deep_buffer,voip_rx,mmap_no_irq_out,fast,Voice Call In,spatializer"/>
+                       sources="primary output,deep_buffer,voip_rx,mmap_no_irq_out,fast,Voice Call In"/>
                 <route type="mix" sink="Speaker"
-                       sources="primary output,deep_buffer,mmap_no_irq_out,fast,compress_offload,voip_rx,Voice Call In,spatializer"/>
+                       sources="primary output,deep_buffer,mmap_no_irq_out,fast,compress_offload,voip_rx,Voice Call In"/>
                 <route type="mix" sink="Wired Headset"
-                       sources="primary output,deep_buffer,mmap_no_irq_out,fast,compress_offload,voip_rx,Voice Call In,spatializer"/>
+                       sources="primary output,deep_buffer,mmap_no_irq_out,fast,compress_offload,voip_rx,Voice Call In"/>
                 <route type="mix" sink="Wired Headphones"
-                       sources="primary output,deep_buffer,mmap_no_irq_out,fast,compress_offload,voip_rx,Voice Call In,spatializer"/>
+                       sources="primary output,deep_buffer,mmap_no_irq_out,fast,compress_offload,voip_rx,Voice Call In"/>
                 <route type="mix" sink="USB Device Out"
-                       sources="primary output,deep_buffer,fast,compress_offload,voip_rx,Voice Call In,hifi_playback,spatializer"/>
+                       sources="primary output,deep_buffer,fast,compress_offload,voip_rx,Voice Call In,hifi_playback"/>
                 <route type="mix" sink="USB Headset Out"
-                       sources="primary output,deep_buffer,fast,compress_offload,voip_rx,Voice Call In,hifi_playback,spatializer"/>
+                       sources="primary output,deep_buffer,fast,compress_offload,voip_rx,Voice Call In,hifi_playback"/>
                 <route type="mix" sink="BT SCO"
                        sources="primary output,deep_buffer,fast,compress_offload,voip_rx,Voice Call In"/>
                 <route type="mix" sink="BT SCO Headset"
@@ -343,13 +335,13 @@
                 <route type="mix" sink="HDMI"
                        sources="hdmi_mix_output"/>
                 <route type="mix" sink="BT A2DP Out"
-                       sources="primary output,deep_buffer,fast,compress_offload,spatializer"/>
+                       sources="primary output,deep_buffer,fast,compress_offload"/>
                 <route type="mix" sink="BT A2DP Headphones"
-                       sources="primary output,deep_buffer,fast,compress_offload,spatializer"/>
+                       sources="primary output,deep_buffer,fast,compress_offload"/>
                 <route type="mix" sink="BT A2DP Speaker"
                        sources="primary output,deep_buffer,fast,compress_offload"/>
                 <route type="mix" sink="BLE Headset Out"
-                       sources="primary output,deep_buffer,fast,compress_offload,voip_rx,Voice Call In,spatializer"/>
+                       sources="primary output,deep_buffer,fast,compress_offload,voip_rx,Voice Call In"/>
                 <route type="mix" sink="BLE Speaker Out"
                        sources="primary output,deep_buffer,fast,compress_offload,voip_rx,Voice Call In"/>
                 <route type="mix" sink="BLE Broadcast"
