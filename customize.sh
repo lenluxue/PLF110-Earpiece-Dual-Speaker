@@ -1,7 +1,7 @@
 #!/system/bin/sh
 
 ui_print " "
-ui_print "  PLF110 Earpiece/Speaker Stereo v2.3.0"
+ui_print "  PLF110 Earpiece/Speaker Spatial Stereo v2.4.0"
 ui_print " "
 
 device=$(getprop ro.product.device)
@@ -44,6 +44,7 @@ ui_print "- AW88265 I2S channel select: right (CHSEL=2)"
 ui_print "- AW882xx bottom smart-PA attenuation: 112 steps (-14 dB)"
 ui_print "- Receiver route: left only; bottom AW88265 route: right only"
 ui_print "- Earpiece policy profile is stereo to preserve the left channel"
+ui_print "- Oplus speaker spatializer and stereo spatialization enabled"
 ui_print "- Gain table overlay disabled for MediaTek HAL stability"
 ui_print "- Reboot after installation"
 ui_print "- The module action button toggles the route immediately"

@@ -1,4 +1,4 @@
-# PLF110 Earpiece/Speaker Stereo v2.3.0
+# PLF110 Earpiece/Speaker Spatial Stereo v2.4.0
 
 English | [简体中文](README.zh-CN.md) | [Bahasa Indonesia](README.id.md)
 
@@ -11,14 +11,18 @@ module also overlays the active audio policy so the earpiece endpoint stays
 stereo; this prevents AudioFlinger from folding left and right before they
 reach the two physical outputs.
 
-The firmware's Oplus Upmix and spatializer libraries are present, but this
-module does not force-load them because doing so can crash the MediaTek audio
-HAL. The module therefore focuses on stable stereo routing and hardware channel
-selection.
+The firmware's Oplus spatializer libraries are present. This version enables
+the firmware's speaker-spatializer feature and routes the earpiece through the
+same spatializer output. It does not force-load the unstable Oplus Upmix
+effect, which can crash the MediaTek audio HAL.
 
 The receiver path disables its `ADDA_DL_CH2/CH4 -> DL0_CH2` right-channel
 switches, while the bottom AW88265 path keeps `I2SOUT4_CH2 -> DL0_CH2` for the
 right channel.
+
+The module also enables stereo spatialization before AudioService starts. The
+effect is only available after reboot and only for output paths accepted by
+the firmware spatializer; it is separate from left/right channel separation.
 
 Install the ZIP in KernelSU or Magisk and reboot. The module action button
 toggles the dual route without a reboot. Uninstalling clears the route and

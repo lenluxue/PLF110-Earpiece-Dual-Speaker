@@ -8,7 +8,8 @@ exec >> "$LOG" 2>&1
 
 echo "[$(date '+%F %T')] service start"
 
-POLICY=/vendor/etc/audio_policy_configuration_a2dp_offload_enable_cg_enable.xml
+POLICY=/my_product/etc/audio_policy_configuration_a2dp_offload_enable_cg_enable.xml
+[ -f "$POLICY" ] || POLICY=/vendor/etc/audio_policy_configuration_a2dp_offload_enable_cg_enable.xml
 if /system/bin/grep -A5 'tagName="Earpiece"' "$POLICY" 2>/dev/null | /system/bin/grep -q 'AUDIO_CHANNEL_OUT_STEREO'; then
     echo "[$(date '+%F %T')] stereo earpiece policy active"
 else
