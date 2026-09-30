@@ -10,4 +10,7 @@ if [ -x "$MODDIR/patch_gain.sh" ]; then
 fi
 sh "$MODDIR/audio_ctl.sh" clear >> "$LOG" 2>&1
 
+umount /data/system/oplus_persist_features.xml 2>/dev/null || true
+rm -f "$STATE_DIR/oplus_persist_features.xml" "$STATE_DIR/oplus_persist_features.xml.tmp."* 2>/dev/null || true
+
 rm -rf "$STATE_DIR"

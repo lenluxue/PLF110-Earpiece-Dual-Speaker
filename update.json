@@ -1,6 +1,6 @@
 {
-  "version": "2.4.2",
-  "versionCode": 242,
-  "zipUrl": "https://github.com/lenluxue/PLF110-Earpiece-Dual-Speaker/releases/download/2.4.2/PLF110-Earpiece-Dual-Speaker-v2.4.2.zip",
-  "changelog": "Add CN-region Oplus speaker spatializer capability, stereo spatialization, automatic policy mounting, and boot-time dual-speaker routing."
+  "version": "2.4.3",
+  "versionCode": 243,
+  "zipUrl": "https://github.com/lenluxue/PLF110-Earpiece-Dual-Speaker/releases/download/2.4.3/PLF110-Earpiece-Dual-Speaker-v2.4.3.zip",
+  "changelog": "Enable the Oplus speaker spatializer through the CN feature cache while keeping the original system cache unchanged when the module is disabled."
 }
