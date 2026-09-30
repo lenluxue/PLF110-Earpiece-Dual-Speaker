@@ -8,6 +8,10 @@ exec >> "$LOG" 2>&1
 
 echo "[$(date '+%F %T')] service start"
 
+# The vendor Oplus spatializer crashes liboplus_audiox.so on this device.
+# Keep Android's spatializer preference off; the stereo route below is direct.
+/system/bin/settings put secure spatial_audio_enabled 0 2>/dev/null || true
+
 POLICY=/my_product/etc/audio_policy_configuration_a2dp_offload_enable_cg_enable.xml
 [ -f "$POLICY" ] || POLICY=/vendor/etc/audio_policy_configuration_a2dp_offload_enable_cg_enable.xml
 if /system/bin/grep -A5 'tagName="Earpiece"' "$POLICY" 2>/dev/null | /system/bin/grep -q 'AUDIO_CHANNEL_OUT_STEREO'; then

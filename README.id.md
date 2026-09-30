@@ -1,10 +1,10 @@
-# PLF110 Earpiece/Speaker Spatial Stereo v2.4.4
+# PLF110 Earpiece/Speaker Spatial Stereo v2.4.5
 
 [English](README.md) | [简体中文](README.zh-CN.md) | Bahasa Indonesia
 
 Modul KernelSU/Magisk ini ditujukan untuk OnePlus PLF110 Android 16 yang telah di-root.
 
-Modul menetapkan `AUDIO_DEVICE_OUT_SPEAKER` dan `AUDIO_DEVICE_OUT_EARPIECE` ke strategi media 5, menjaga indeks media earpiece tetap mengikuti tombol volume media, dan mengatur amplifier pintar AW88265 agar memilih kanal I2S kanan. Modul ini juga mengaktifkan spatializer speaker Oplus dan merutekan earpiece ke keluaran spatializer yang sama. Efek Upmix yang tidak stabil tidak dimuat karena dapat membuat HAL audio MediaTek crash.
+Modul menetapkan `AUDIO_DEVICE_OUT_SPEAKER` dan `AUDIO_DEVICE_OUT_EARPIECE` ke strategi media 5, menjaga indeks media earpiece tetap mengikuti tombol volume media, dan mengatur amplifier pintar AW88265 agar memilih kanal I2S kanan. Spatializer vendor Oplus sengaja dinonaktifkan karena pada firmware ini dapat membuat HAL audio MediaTek crash; modul hanya memakai routing stereo langsung yang lebih stabil.
 
 Pasang berkas ZIP melalui KernelSU atau Magisk, lalu mulai ulang perangkat. Tombol aksi modul dapat mengaktifkan atau menonaktifkan rute speaker ganda tanpa perlu memulai ulang. Saat modul dihapus, rute tersebut dibersihkan dan indeks perangkat earpiece yang disimpan pada pemasangan pertama akan dipulihkan.
 

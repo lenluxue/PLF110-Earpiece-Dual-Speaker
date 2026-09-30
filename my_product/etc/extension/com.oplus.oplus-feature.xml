@@ -211,7 +211,6 @@
 	<oplus-feature name="oplus.software.radio.omnisense_support"/>
 	<oplus-feature name="oplus.software.radio.wireless_fence_service"/>
 	<oplus-feature name="oplus.hardware.face.alternate_face_support"/>
-	<oplus-feature name="oplus.software.spatializer_speaker"/>
 	<oplus-feature name="oplus.software.radio.dns_fast_retransmit"/>
 </oplus-config>
 <!-- Timestamp 2026-08-06T21:14:20 #a1c55e38-6b3f-4579-899a-60c81b5c6c06 -->

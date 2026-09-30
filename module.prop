@@ -1,7 +1,7 @@
 id=plf110_earpiece_dual_speaker
 name=PLF110 Earpiece Dual Speaker
-version=2.4.4
-versionCode=244
+version=2.4.5
+versionCode=245
 author=Codex
-description=Auto-starting stereo route with Oplus speaker spatializer and -14 dB bottom speaker.
+description=Auto-starting stereo route with stable left/right dual-speaker output and -14 dB bottom speaker.
 updateJson=https://raw.githubusercontent.com/lenluxue/PLF110-Earpiece-Dual-Speaker/main/update.json
