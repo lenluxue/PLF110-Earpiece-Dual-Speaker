@@ -1,0 +1,6 @@
+{
+  "version": "2.4.2",
+  "versionCode": 242,
+  "zipUrl": "https://github.com/lenluxue/PLF110-Earpiece-Dual-Speaker/releases/download/2.4.2/PLF110-Earpiece-Dual-Speaker-v2.4.2.zip",
+  "changelog": "Add CN-region Oplus speaker spatializer capability, stereo spatialization, automatic policy mounting, and boot-time dual-speaker routing."
+}

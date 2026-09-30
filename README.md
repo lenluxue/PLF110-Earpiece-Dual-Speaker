@@ -1,4 +1,4 @@
-# PLF110 Earpiece/Speaker Spatial Stereo v2.4.1
+# PLF110 Earpiece/Speaker Spatial Stereo v2.4.2
 
 English | [简体中文](README.zh-CN.md) | [Bahasa Indonesia](README.id.md)
 

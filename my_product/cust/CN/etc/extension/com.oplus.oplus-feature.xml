@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<oplus-config>
+	<oplus-feature name="oplus.software.radio.network_time_slice"/>
+	<oplus-feature name="oplus.software.radio.situation_map_cloud_enable"/>
+	<oplus-feature name="oplus.software.spatializer_speaker"/>
+</oplus-config>
+<!-- Timestamp 2025-04-23T11:08:39 #673585 -->

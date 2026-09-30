@@ -1,7 +1,7 @@
 #!/system/bin/sh
 
 ui_print " "
-ui_print "  PLF110 Earpiece/Speaker Spatial Stereo v2.4.1"
+ui_print "  PLF110 Earpiece/Speaker Spatial Stereo v2.4.2"
 ui_print " "
 
 device=$(getprop ro.product.device)
