@@ -1,7 +1,7 @@
 #!/system/bin/sh
 
 ui_print " "
-ui_print "  PLF110 Earpiece/Speaker Spatial Stereo v2.4.3"
+ui_print "  PLF110 Earpiece/Speaker Spatial Stereo v2.4.4"
 ui_print " "
 
 device=$(getprop ro.product.device)
@@ -55,6 +55,7 @@ set_perm "$MODPATH/service.sh" 0 0 0755
 set_perm "$MODPATH/action.sh" 0 0 0755
 set_perm "$MODPATH/audio_ctl.sh" 0 0 0755
 set_perm_recursive "$MODPATH/my_product" 0 0 0755 0644
+set_perm_recursive "$MODPATH/system_ext" 0 0 0755 0644
 set_perm "$MODPATH/patch_gain.sh" 0 0 0755
 set_perm "$MODPATH/post-fs-data.sh" 0 0 0755
 set_perm "$MODPATH/mixer_set_int" 0 0 0755

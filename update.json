@@ -1,6 +1,6 @@
 {
-  "version": "2.4.3",
-  "versionCode": 243,
-  "zipUrl": "https://github.com/lenluxue/PLF110-Earpiece-Dual-Speaker/releases/download/2.4.3/PLF110-Earpiece-Dual-Speaker-v2.4.3.zip",
-  "changelog": "Enable the Oplus speaker spatializer through the CN feature cache while keeping the original system cache unchanged when the module is disabled."
+  "version": "2.4.4",
+  "versionCode": 244,
+  "zipUrl": "https://github.com/lenluxue/PLF110-Earpiece-Dual-Speaker/releases/download/2.4.4/PLF110-Earpiece-Dual-Speaker-v2.4.4.zip",
+  "changelog": "Register the Oplus speaker spatializer in the system_ext read-only feature list so AudioService detects it during boot."
 }

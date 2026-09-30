@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<oplus-config>
+	<oplus-feature name="oplus.software.color_split_feature"/>
+	<oplus-feature name="oplus.software.powerkey_disbale_turnoff_torch"/>
+	<oplus-feature name="oplus.software.pms_restrict_protected_app_install"/>
+	<oplus-feature name="oplus.software.short_press_powerkey_shutdown"/>
+	<oplus-feature name="oplus.software.gameopt.gms.adp_support"/>
+	<oplus-feature name="oplus.software.windowmode.compact.lite"/>
+	<oplus-feature name="oplus.software.miragedisplay.support"/>
+	<oplus-feature name="oplus.software.spatializer_speaker"/>
+</oplus-config>
