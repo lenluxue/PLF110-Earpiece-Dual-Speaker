@@ -2,6 +2,8 @@
 
 English | [简体中文](README.zh-CN.md) | [Bahasa Indonesia](README.id.md)
 
+![Project image](assets/IMG_20261003_094440.jpg)
+
 KernelSU/Magisk module for the rooted OnePlus PLF110 Android 16 firmware.
 
 It assigns `AUDIO_DEVICE_OUT_SPEAKER` and `AUDIO_DEVICE_OUT_EARPIECE` to media

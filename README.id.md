@@ -2,6 +2,8 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md) | Bahasa Indonesia
 
+![Gambar proyek](assets/IMG_20261003_094440.jpg)
+
 Modul KernelSU/Magisk ini ditujukan untuk OnePlus PLF110 Android 16 yang telah di-root.
 
 Modul menetapkan `AUDIO_DEVICE_OUT_SPEAKER` dan `AUDIO_DEVICE_OUT_EARPIECE` ke strategi media 5, menjaga indeks media earpiece tetap mengikuti tombol volume media, dan mengatur amplifier pintar AW88265 agar memilih kanal I2S kanan. Spatializer vendor Oplus sengaja dinonaktifkan karena pada firmware ini dapat membuat HAL audio MediaTek crash; modul hanya memakai routing stereo langsung yang lebih stabil.

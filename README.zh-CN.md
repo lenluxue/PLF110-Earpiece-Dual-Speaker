@@ -2,6 +2,8 @@
 
 [English](README.md) | 简体中文 | [Bahasa Indonesia](README.id.md)
 
+![项目图片](assets/IMG_20261003_094440.jpg)
+
 这是一个用于已 Root 的一加 PLF110 Android 16 固件的 KernelSU/Magisk 模块。
 
 模块把 `AUDIO_DEVICE_OUT_SPEAKER` 和 `AUDIO_DEVICE_OUT_EARPIECE` 分配给媒体策略 5，保持听筒媒体音量随媒体音量键联动，并将 AW88265 智能功放设置为接收 I2S 右声道。同时覆盖当前音频策略，把听筒端声明为立体声，避免 AudioFlinger 在送往双扬声器前把左右声道折叠成单声道。
