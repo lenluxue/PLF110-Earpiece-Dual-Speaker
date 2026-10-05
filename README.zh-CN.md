@@ -27,3 +27,8 @@ AW88265 的通道选择使用驱动定义的 `I2SCTRL1 (0x06)` 寄存器 `CHSEL`
 如需只调整媒体音量，请把数字偏移量写入 `/data/adb/plf110_earpiece_dual_speaker/earpiece_offset`，然后按下模块操作按钮；默认偏移量为 0 个媒体音量步进。
 
 如需在不重新构建模块的情况下调整左右声道响度平衡，请把 `0` 到 `720` 之间的整数写入 `/data/adb/plf110_earpiece_dual_speaker/smartpa_attenuation`。每一步只会让底部扬声器衰减 0.125 dB；例如，`24` 为 -3 dB、`32` 为 -4 dB、`40` 为 -5 dB、`48` 为 -6 dB、`64` 为 -8 dB、`80` 为 -10 dB、`112` 为 -14 dB。正在运行的监控进程会在一秒内应用新值。
+
+## 许可证
+
+本项目采用 [PolyForm Noncommercial License 1.0.0](LICENSE) 许可。
+仓库中包含的部分第三方文件仍遵循其文件中附带的原有许可声明。

@@ -21,3 +21,8 @@ Putar `左右声道测试.wav` pada volume media rendah. Nada 440 Hz pertama ada
 Untuk menyetel media saja, tulis offset numerik ke `/data/adb/plf110_earpiece_dual_speaker/earpiece_offset`, lalu tekan tombol aksi modul; offset bawaan adalah 160 langkah volume media.
 
 Untuk menyetel keseimbangan kenyaringan kiri/kanan tanpa membangun ulang modul, tulis bilangan bulat dari `0` hingga `720` ke `/data/adb/plf110_earpiece_dual_speaker/smartpa_attenuation`. Setiap langkah hanya menurunkan speaker bawah sebesar 0,125 dB; contohnya, `24` adalah -3 dB, `32` adalah -4 dB, `40` adalah -5 dB, `48` adalah -6 dB, `64` adalah -8 dB, `80` adalah -10 dB, dan `112` adalah -14 dB. Proses pemantau yang sedang berjalan akan menerapkan nilai baru dalam waktu satu detik.
+
+## Lisensi
+
+Proyek ini dilisensikan berdasarkan [PolyForm Noncommercial License 1.0.0](LICENSE).
+Beberapa berkas pihak ketiga yang disertakan tetap mengikuti pemberitahuan lisensi aslinya.

@@ -61,3 +61,8 @@ from `0` to `720` to
 only the bottom speaker by 0.125 dB; for example `24` is -3 dB, `32` is -4 dB,
 `40` is -5 dB, `48` is -6 dB, `64` is -8 dB, `80` is -10 dB, and `112` is
 -14 dB. The running monitor applies the new value within one second.
+
+## License
+
+This project is licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE).
+Some included third-party files retain the license notices included with those files.
