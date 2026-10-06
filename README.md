@@ -1,4 +1,4 @@
-# PLF110 Earpiece/Speaker Stereo v2.4.6
+# PLF110 Earpiece/Speaker Stereo v2.4.7
 
 English | [简体中文](README.zh-CN.md) | [Bahasa Indonesia](README.id.md)
 
@@ -35,7 +35,7 @@ disabled or uninstalled. It does not modify the kernel, audio HAL, or vendor
 gain tables.
 
 The bottom AW882xx smart amplifier is attenuated independently through its
-`aw_dev_0_volume` mixer control. The default value is `112`, which is 14 dB of
+`aw_dev_0_volume` mixer control. The default value is `128`, which is 16 dB of
 attenuation because the AW88265 driver uses 0.125 dB steps (`0` is the loudest
 setting). The monitor reapplies this value if the audio HAL changes profiles.
 The earpiece uses the vendor `Handset Volume` maximum safe index
@@ -59,8 +59,9 @@ To tune the left/right perceived balance without rebuilding, write an integer
 from `0` to `720` to
 `/data/adb/plf110_earpiece_dual_speaker/smartpa_attenuation`. Each step lowers
 only the bottom speaker by 0.125 dB; for example `24` is -3 dB, `32` is -4 dB,
-`40` is -5 dB, `48` is -6 dB, `64` is -8 dB, `80` is -10 dB, and `112` is
--14 dB. The running monitor applies the new value within one second.
+`40` is -5 dB, `48` is -6 dB, `64` is -8 dB, `80` is -10 dB, `112` is
+-14 dB, and `128` is -16 dB. The running monitor applies the new value within
+one second.
 
 ## License
 

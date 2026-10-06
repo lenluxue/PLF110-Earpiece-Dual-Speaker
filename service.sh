@@ -55,7 +55,7 @@ applied=0
 while [ "$attempt" -le 6 ]; do
     echo "[$(date '+%F %T')] apply attempt $attempt"
     if sh "$MODDIR/audio_ctl.sh" apply; then
-        echo "[$(date '+%F %T')] stereo route active; earpiece=left, AW88265=right, bottom=-14 dB"
+        echo "[$(date '+%F %T')] stereo route active; earpiece=left, AW88265=right, bottom=-16 dB"
         applied=1
         break
     fi

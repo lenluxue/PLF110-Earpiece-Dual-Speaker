@@ -1,7 +1,7 @@
 #!/system/bin/sh
 
 ui_print " "
-ui_print "  PLF110 Earpiece/Speaker Stereo v2.4.6"
+ui_print "  PLF110 Earpiece/Speaker Stereo v2.4.7"
 ui_print " "
 
 device=$(getprop ro.product.device)
@@ -19,7 +19,7 @@ esac
 STATE_DIR=/data/adb/plf110_earpiece_dual_speaker
 BACKUP="$STATE_DIR/earpiece_volume.original"
 mkdir -p "$STATE_DIR"
-printf '112\n' > "$STATE_DIR/smartpa_attenuation"
+printf '128\n' > "$STATE_DIR/smartpa_attenuation"
 printf '0\n' > "$STATE_DIR/earpiece_offset"
 
 if [ ! -f "$BACKUP" ]; then
@@ -41,7 +41,7 @@ ui_print "- Earpiece media index follows the speaker media index"
 ui_print "- Handset hardware gain: maximum vendor index (0)"
 ui_print "- Legacy Lineout Volume override is restored, not forced"
 ui_print "- AW88265 I2S channel select: right (CHSEL=2)"
-ui_print "- AW882xx bottom smart-PA attenuation: 112 steps (-14 dB)"
+ui_print "- AW882xx bottom smart-PA attenuation: 128 steps (-16 dB)"
 ui_print "- Receiver route: left only; bottom AW88265 route: right only"
 ui_print "- Earpiece policy profile is stereo to preserve the left channel"
 ui_print "- Unstable vendor spatializer disabled to prevent MediaTek HAL crashes"
