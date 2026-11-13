@@ -10,13 +10,13 @@ cp "$BUILD_DIR/classes.dex" audio_compat17.dex
 version=$(sed -n 's/^version=//p' module.prop)
 mkdir -p dist
 archive="dist/PLF110-Earpiece-Dual-Speaker-v$version.zip"
-# Build into a fresh archive. Repository images and development tools are not
-# part of the installable module.
+# Package only runtime files and the license. Keep development sources,
+# documentation, repository images and test artifacts outside the module ZIP.
 zip -q -9 -r "$BUILD_DIR/module.zip" \
     module.prop customize.sh post-fs-data.sh service.sh action.sh audio_ctl.sh \
     coloros_compat.sh patch_earpiece.awk patch_gain.sh uninstall.sh \
     mixer_set_int mixer_set_route strategy_route.dex device_volume.dex audio_compat17.dex \
-    legacy16 LICENSE README.md README.zh-CN.md README.id.md
+    legacy16 LICENSE
 mv "$BUILD_DIR/module.zip" "$archive"
 unzip -t "$archive" | tail -1
 ls -l "$archive"
