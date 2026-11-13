@@ -1,6 +1,7 @@
 #!/system/bin/sh
 
-MODDIR=${0%/*}
+BINDIR=${0%/*}
+MODDIR=${BINDIR%/*}
 . "$MODDIR/coloros_compat.sh"
 APP_PROCESS=/system/bin/app_process64
 MEDIA_STRATEGY_ID=5
@@ -10,8 +11,8 @@ STATE_DIR=/data/adb/plf110_earpiece_dual_speaker
 OFFSET_FILE="$STATE_DIR/earpiece_offset"
 APPLIED_FILE="$STATE_DIR/earpiece_volume.applied"
 MONITOR_LOCK="$STATE_DIR/monitor.lock"
-MIXER_TOOL="$MODDIR/mixer_set_int"
-ROUTE_TOOL="$MODDIR/mixer_set_route"
+MIXER_TOOL="$BINDIR/mixer_set_int"
+ROUTE_TOOL="$BINDIR/mixer_set_route"
 HANDSET_CONTROL="Handset Volume"
 HANDSET_BACKUP="$STATE_DIR/handset_volume.original"
 HANDSET_GAIN_INDEX=0
@@ -32,7 +33,7 @@ RCV_CH2_B="ADDA_DL_CH4 DL0_CH2"
 default_offset=0
 
 run_compat17() {
-    CLASSPATH="$MODDIR/audio_compat17.dex" \
+    CLASSPATH="$BINDIR/audio_compat17.dex" \
         "$APP_PROCESS" -Xmx64m /system/bin AudioCompat17 "$@"
 }
 
@@ -96,14 +97,14 @@ run_route() {
         run_compat17 route "$MEDIA_STRATEGY_ID" "$1"
         return $?
     fi
-    CLASSPATH="$MODDIR/strategy_route.dex" \
+    CLASSPATH="$BINDIR/strategy_route.dex" \
         "$APP_PROCESS" /system/bin StrategyRoute "$MEDIA_STRATEGY_ID" 1 "$1"
 }
 
 clear_legacy_route() {
     # Strategy 0 is the MEDIA strategy on ColorOS 17, not a legacy override.
     [ "$COLOROS_MAJOR" = 17 ] && return 0
-    CLASSPATH="$MODDIR/strategy_route.dex" \
+    CLASSPATH="$BINDIR/strategy_route.dex" \
         "$APP_PROCESS" /system/bin StrategyRoute "$LEGACY_STRATEGY_ID" 1 clear
 }
 
@@ -112,7 +113,7 @@ set_earpiece_volume() {
         run_compat17 set 1 "$1"
         return $?
     fi
-    CLASSPATH="$MODDIR/device_volume.dex" \
+    CLASSPATH="$BINDIR/device_volume.dex" \
         "$APP_PROCESS" /system/bin DeviceVolume 1 "$1"
 }
 

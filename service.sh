@@ -1,6 +1,7 @@
 #!/system/bin/sh
 
 MODDIR=${0%/*}
+BINDIR="$MODDIR/bin"
 STATE_DIR=/data/adb/plf110_earpiece_dual_speaker
 LOG="$STATE_DIR/service.log"
 mkdir -p "$STATE_DIR"
@@ -27,10 +28,10 @@ done
 
 if [ -f "$STATE_DIR/disabled" ]; then
     echo "[$(date '+%F %T')] disabled by action button"
-    if [ -x "$MODDIR/patch_gain.sh" ]; then
-        sh "$MODDIR/patch_gain.sh" clear || true
+    if [ -x "$BINDIR/patch_gain.sh" ]; then
+        sh "$BINDIR/patch_gain.sh" clear || true
     fi
-    sh "$MODDIR/audio_ctl.sh" clear
+    sh "$BINDIR/audio_ctl.sh" clear
     exit 0
 fi
 
@@ -42,11 +43,11 @@ while [ "$(getprop sys.boot_completed)" != "1" ] && [ "$i" -lt 30 ]; do
 done
 
 # Record the detected strategy and volume range before applying the route.
-sh "$MODDIR/audio_ctl.sh" status || exit 1
+sh "$BINDIR/audio_ctl.sh" status || exit 1
 
 # Keep the gain-table overlay disabled; this firmware's parser crashes on it.
-if [ -x "$MODDIR/patch_gain.sh" ]; then
-    if sh "$MODDIR/patch_gain.sh" apply; then
+if [ -x "$BINDIR/patch_gain.sh" ]; then
+    if sh "$BINDIR/patch_gain.sh" apply; then
         echo "[$(date '+%F %T')] gain-table overlay skipped"
     else
         echo "[$(date '+%F %T')] gain-table overlay unavailable; continuing"
@@ -57,7 +58,7 @@ attempt=1
 applied=0
 while [ "$attempt" -le 6 ]; do
     echo "[$(date '+%F %T')] apply attempt $attempt"
-    if sh "$MODDIR/audio_ctl.sh" apply; then
+    if sh "$BINDIR/audio_ctl.sh" apply; then
         echo "[$(date '+%F %T')] stereo route active; earpiece=left, AW88265=right, bottom=-16 dB"
         applied=1
         break
@@ -72,4 +73,4 @@ if [ "$applied" -ne 1 ]; then
 fi
 
 # Keep the earpiece media index aligned with the speaker setting.
-sh "$MODDIR/audio_ctl.sh" monitor
+sh "$BINDIR/audio_ctl.sh" monitor

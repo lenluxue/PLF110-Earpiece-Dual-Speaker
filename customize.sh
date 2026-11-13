@@ -36,7 +36,7 @@ printf '0\n' > "$STATE_DIR/earpiece_offset"
 
 if [ ! -f "$BACKUP" ]; then
     if [ "$COLOROS_MAJOR" = 17 ]; then
-        raw=$(CLASSPATH="$MODPATH/audio_compat17.dex" /system/bin/app_process64 -Xmx64m /system/bin AudioCompat17 get 1) || abort "Cannot query ColorOS 17 device volume"
+        raw=$(CLASSPATH="$MODPATH/bin/audio_compat17.dex" /system/bin/app_process64 -Xmx64m /system/bin AudioCompat17 get 1) || abort "Cannot query ColorOS 17 device volume"
     else
         raw=$(/system/bin/settings get system volume_music_earpiece 2>/dev/null)
     fi
@@ -73,11 +73,11 @@ set_perm_recursive "$MODPATH" 0 0 0755 0644
 set_perm "$MODPATH/customize.sh" 0 0 0755
 set_perm "$MODPATH/service.sh" 0 0 0755
 set_perm "$MODPATH/action.sh" 0 0 0755
-set_perm "$MODPATH/audio_ctl.sh" 0 0 0755
+set_perm "$MODPATH/bin/audio_ctl.sh" 0 0 0755
 set_perm_recursive "$MODPATH/legacy16" 0 0 0755 0644
 set_perm "$MODPATH/coloros_compat.sh" 0 0 0755
-set_perm "$MODPATH/patch_gain.sh" 0 0 0755
+set_perm "$MODPATH/bin/patch_gain.sh" 0 0 0755
 set_perm "$MODPATH/post-fs-data.sh" 0 0 0755
-set_perm "$MODPATH/mixer_set_int" 0 0 0755
-set_perm "$MODPATH/mixer_set_route" 0 0 0755
+set_perm "$MODPATH/bin/mixer_set_int" 0 0 0755
+set_perm "$MODPATH/bin/mixer_set_route" 0 0 0755
 set_perm "$MODPATH/uninstall.sh" 0 0 0755

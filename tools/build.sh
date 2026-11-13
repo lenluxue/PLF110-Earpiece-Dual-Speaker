@@ -6,17 +6,15 @@ trap 'rm -rf "$BUILD_DIR"' EXIT HUP INT TERM
 javac --release 8 -Xlint:-options -d "$BUILD_DIR" tools/AudioCompat17.java
 java -Xmx256m -cp "${D8_JAR:-/data/data/com.termux/files/usr/share/java/d8.jar}" \
     com.android.tools.r8.D8 --min-api 26 --output "$BUILD_DIR" "$BUILD_DIR/AudioCompat17.class"
-cp "$BUILD_DIR/classes.dex" audio_compat17.dex
+cp "$BUILD_DIR/classes.dex" bin/audio_compat17.dex
 version=$(sed -n 's/^version=//p' module.prop)
 mkdir -p dist
 archive="dist/PLF110-Earpiece-Dual-Speaker-v$version.zip"
 # Package only runtime files and the license. Keep development sources,
 # documentation, repository images and test artifacts outside the module ZIP.
 zip -q -9 -r "$BUILD_DIR/module.zip" \
-    module.prop customize.sh post-fs-data.sh service.sh action.sh audio_ctl.sh \
-    coloros_compat.sh patch_earpiece.awk patch_gain.sh uninstall.sh \
-    mixer_set_int mixer_set_route strategy_route.dex device_volume.dex audio_compat17.dex \
-    legacy16 LICENSE
+    module.prop customize.sh post-fs-data.sh service.sh action.sh \
+    coloros_compat.sh uninstall.sh bin legacy16 LICENSE
 mv "$BUILD_DIR/module.zip" "$archive"
 unzip -t "$archive" | tail -1
 ls -l "$archive"

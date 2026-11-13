@@ -10,7 +10,7 @@ BASELINE = ROOT.parent / 'plf110-remote'
 
 
 def patch_xml(source):
-    return subprocess.run(['awk', '-f', str(ROOT / 'patch_earpiece.awk')],
+    return subprocess.run(['awk', '-f', str(ROOT / 'bin/patch_earpiece.awk')],
                           input=source, text=True, capture_output=True)
 
 
@@ -61,7 +61,7 @@ class PolicyTests(unittest.TestCase):
             original = BASELINE / file.relative_to(ROOT / 'legacy16')
             self.assertEqual(file.read_bytes(), original.read_bytes(), str(file))
         for name in ('strategy_route.dex', 'device_volume.dex', 'mixer_set_int', 'mixer_set_route'):
-            self.assertEqual((ROOT / name).read_bytes(), (BASELINE / name).read_bytes(), name)
+            self.assertEqual((ROOT / 'bin' / name).read_bytes(), (BASELINE / name).read_bytes(), name)
 
 
 class VersionTests(unittest.TestCase):
@@ -90,14 +90,16 @@ run_route keep
 clear_legacy_route
 set_earpiece_volume 43
 '''
-        def trace(path):
+        def trace(path, entrypoint):
             source = path.read_text().split('case "$1" in\n    apply)')[0]
             source = source.split('\ninit_audio_compat || exit 1')[0]
-            return subprocess.check_output(['sh', '-c', source + calls, str(ROOT / 'audio_ctl.sh')], text=True)
-        self.assertEqual(trace(ROOT / 'audio_ctl.sh'), trace(BASELINE / 'audio_ctl.sh'))
+            return subprocess.check_output(['sh', '-c', source + calls, str(entrypoint)], text=True)
+        actual = trace(ROOT / 'bin/audio_ctl.sh', ROOT / 'bin/audio_ctl.sh')
+        expected = trace(BASELINE / 'audio_ctl.sh', ROOT / 'audio_ctl.sh')
+        self.assertEqual(actual.replace(str(ROOT / 'bin'), str(ROOT)), expected)
 
     def test_coloros17_does_not_clear_media_as_legacy(self):
-        source = (ROOT / 'audio_ctl.sh').read_text().split('\ninit_audio_compat || exit 1')[0]
+        source = (ROOT / 'bin/audio_ctl.sh').read_text().split('\ninit_audio_compat || exit 1')[0]
         calls = '''
 COLOROS_MAJOR=17
 MEDIA_STRATEGY_ID=0
@@ -106,7 +108,7 @@ clear_legacy_route
 run_route keep
 set_earpiece_volume 20
 '''
-        result = subprocess.check_output(['sh', '-c', source + calls, str(ROOT / 'audio_ctl.sh')], text=True)
+        result = subprocess.check_output(['sh', '-c', source + calls, str(ROOT / 'bin/audio_ctl.sh')], text=True)
         self.assertEqual(result, 'route 0 keep\nset 1 20\n')
 
     def test_coloros16_mounts_only_legacy_files(self):

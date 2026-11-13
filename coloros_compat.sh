@@ -30,7 +30,7 @@ prepare_coloros17_policies() {
         relative=${policy#"$source_root"}
         output="$output_root$relative"
         mkdir -p "${output%/*}" || return 1
-        if ! awk -f "$MODDIR/patch_earpiece.awk" "$policy" > "$output.tmp"; then
+        if ! awk -f "$MODDIR/bin/patch_earpiece.awk" "$policy" > "$output.tmp"; then
             echo "Cannot prepare stereo earpiece policy: $policy" >&2
             rm -f "$output.tmp"
             return 1
