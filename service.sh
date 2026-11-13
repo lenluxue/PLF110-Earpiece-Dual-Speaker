@@ -41,6 +41,9 @@ while [ "$(getprop sys.boot_completed)" != "1" ] && [ "$i" -lt 30 ]; do
     sleep 2
 done
 
+# Record the detected strategy and volume range before applying the route.
+sh "$MODDIR/audio_ctl.sh" status || exit 1
+
 # Keep the gain-table overlay disabled; this firmware's parser crashes on it.
 if [ -x "$MODDIR/patch_gain.sh" ]; then
     if sh "$MODDIR/patch_gain.sh" apply; then

@@ -1,7 +1,7 @@
 id=plf110_earpiece_dual_speaker
 name=PLF110 Earpiece Dual Speaker
-version=2.4.7
-versionCode=247
+version=2.5.0
+versionCode=250
 author=lenluxue
-description=Auto-starting stereo route with stable left/right dual-speaker output and -16 dB bottom speaker.
+description=ColorOS 16/17 compatible auto-starting left/right dual-speaker output and -16 dB bottom speaker.
 updateJson=https://raw.githubusercontent.com/lenluxue/PLF110-Earpiece-Dual-Speaker/main/update.json

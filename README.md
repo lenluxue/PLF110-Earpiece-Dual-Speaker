@@ -1,28 +1,33 @@
-# PLF110 Earpiece/Speaker Stereo v2.4.7
+# PLF110 Earpiece/Speaker Stereo v2.5.0
 
 English | [简体中文](README.zh-CN.md) | [Bahasa Indonesia](README.id.md)
 
 ![Project image](assets/IMG_20261003_094440.jpg)
 
-KernelSU/Magisk module for the rooted OnePlus PLF110 Android 16 firmware.
+KernelSU/Magisk module for the rooted OnePlus PLF110 running ColorOS 16 or 17.
 
-It assigns `AUDIO_DEVICE_OUT_SPEAKER` and `AUDIO_DEVICE_OUT_EARPIECE` to media
-strategy 5, keeps the earpiece media index linked to the media-volume slider,
+It assigns `AUDIO_DEVICE_OUT_SPEAKER` and `AUDIO_DEVICE_OUT_EARPIECE` to the media
+strategy, keeps the earpiece media index linked to the media-volume slider,
 and programs the AW88265 smart amplifier to select the right I2S channel. The
 module also overlays the active audio policy so the earpiece endpoint stays
 stereo; this prevents AudioFlinger from folding left and right before they
 reach the two physical outputs.
 
-The firmware's Oplus spatializer libraries are present, but this device's
-vendor spatializer crashes the MediaTek audio HAL when enabled. This version
-keeps the spatializer disabled for stability and uses direct stereo routing.
+ColorOS 16 retains the original strategy 5, routing/volume DEX files and policy
+contents. ColorOS 17 discovers the `STREAM_MUSIC` strategy at runtime (ID 0 on
+PLF110_17.0.0.101) and calls `IAudioService.setDeviceVolume` through the firmware's
+Binder stub, instead of a hardcoded transaction number.
+
+At boot, ColorOS 17 policy copies are generated from the current firmware.
+Only the earpiece output profile masks change to stereo; other endpoints,
+routes, vendor feature lists and spatializer definitions retain their stock
+contents. ColorOS 16 uses the existing policy files from `legacy16/`.
 
 The receiver path disables its `ADDA_DL_CH2/CH4 -> DL0_CH2` right-channel
 switches, while the bottom AW88265 path keeps `I2SOUT4_CH2 -> DL0_CH2` for the
 right channel.
 
-The module intentionally does not enable the vendor spatializer. This is
-separate from left/right channel separation, which remains active.
+The module uses direct left/right routing and does not request spatialization.
 
 Install the ZIP in KernelSU or Magisk and reboot. The module action button
 toggles the dual route without a reboot. Uninstalling clears the route and
@@ -51,6 +56,9 @@ Play `左右声道测试.wav` at a low media volume. The first 440 Hz tone is le
 the following 880 Hz tone is right. For separated output, the first tone should
 come from the earpiece and the second from the bottom speaker.
 
+The test WAV is not included in the module ZIP. It can be generated with
+`tools/make_channel_test.c` from the repository.
+
 To tune only media, write a numeric offset to
 `/data/adb/plf110_earpiece_dual_speaker/earpiece_offset` and toggle the module
 action; the default offset is `0` media steps.
@@ -62,6 +70,11 @@ only the bottom speaker by 0.125 dB; for example `24` is -3 dB, `32` is -4 dB,
 `40` is -5 dB, `48` is -6 dB, `64` is -8 dB, `80` is -10 dB, `112` is
 -14 dB, and `128` is -16 dB. The running monitor applies the new value within
 one second.
+
+Build the compact installable ZIP with `sh tools/build.sh`. Repository images
+and development tools are excluded. Reboot after installation to load the
+generated policy. See `docs/coloros-compatibility.md` in the repository for
+the validation scope.
 
 ## License
 

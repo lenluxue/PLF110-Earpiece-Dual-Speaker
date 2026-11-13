@@ -1,18 +1,20 @@
-# PLF110 听筒/底部扬声器立体声 v2.4.7
+# PLF110 听筒/底部扬声器立体声 v2.5.0
 
 [English](README.md) | 简体中文 | [Bahasa Indonesia](README.id.md)
 
 ![项目图片](assets/IMG_20261003_094440.jpg)
 
-这是一个用于已 Root 的一加 PLF110 Android 16 固件的 KernelSU/Magisk 模块。
+这是一个用于已 Root 的一加 PLF110 ColorOS 16 / ColorOS 17 的 KernelSU/Magisk 模块。
 
-模块把 `AUDIO_DEVICE_OUT_SPEAKER` 和 `AUDIO_DEVICE_OUT_EARPIECE` 分配给媒体策略 5，保持听筒媒体音量随媒体音量键联动，并将 AW88265 智能功放设置为接收 I2S 右声道。同时覆盖当前音频策略，把听筒端声明为立体声，避免 AudioFlinger 在送往双扬声器前把左右声道折叠成单声道。
+模块把 `AUDIO_DEVICE_OUT_SPEAKER` 和 `AUDIO_DEVICE_OUT_EARPIECE` 分配给媒体策略，保持听筒媒体音量随媒体音量键联动，并将 AW88265 智能功放设置为接收 I2S 右声道。同时把听筒输出端声明为立体声，避免 AudioFlinger 在送往双扬声器前把左右声道折叠成单声道。
 
-固件带有 Oplus 空间化库，但本机开启该厂商空间化器会导致 MediaTek 音频 HAL 崩溃。本版本为稳定性关闭空间化器，只保留直接左右声道分离。
+ColorOS 16 保留原有的媒体策略 5、路由/音量 DEX 和配置文件内容。ColorOS 17 从系统查询 `STREAM_MUSIC` 对应的策略（本机 `PLF110_17.0.0.101` 为 0），并通过当前固件的 Binder Stub 调用 `IAudioService.setDeviceVolume`。
+
+ColorOS 17 每次开机从当前固件生成音频配置副本，只把听筒输出 profile 的声道改为立体声，其余端点、路由、厂商 feature 列表和空间化定义均保留原厂内容。ColorOS 16 继续使用 `legacy16/` 中的原有配置，防止不同版本互相覆盖。
 
 模块还会关闭听筒路径的 `ADDA_DL_CH2/CH4 -> DL0_CH2` 右声道开关，听筒只接收左声道；底部 AW88265 的 `I2SOUT4_CH2 -> DL0_CH2` 保持右声道。
 
-模块不会打开厂商空间化器；左右声道分离与空间化是两个独立环节。
+模块采用直接左右声道路由，不请求开启空间化。
 
 在 KernelSU 或 Magisk 中安装 ZIP，然后重启。模块的操作按钮可以在无需重启的情况下开关双扬声器路由。卸载模块时会清除该路由，并恢复首次安装时保存的听筒设备音量索引。
 
@@ -24,9 +26,13 @@ AW88265 的通道选择使用驱动定义的 `I2SCTRL1 (0x06)` 寄存器 `CHSEL`
 
 低媒体音量播放 `左右声道测试.wav`：先出现的 440 Hz 是左声道，随后 880 Hz 是右声道。修复后的理想结果是低音主要从听筒出、高音主要从底部扬声器出。
 
+安装包不包含测试 WAV，可使用仓库的 `tools/make_channel_test.c` 生成。
+
 如需只调整媒体音量，请把数字偏移量写入 `/data/adb/plf110_earpiece_dual_speaker/earpiece_offset`，然后按下模块操作按钮；默认偏移量为 0 个媒体音量步进。
 
 如需在不重新构建模块的情况下调整左右声道响度平衡，请把 `0` 到 `720` 之间的整数写入 `/data/adb/plf110_earpiece_dual_speaker/smartpa_attenuation`。每一步只会让底部扬声器衰减 0.125 dB；例如，`24` 为 -3 dB、`32` 为 -4 dB、`40` 为 -5 dB、`48` 为 -6 dB、`64` 为 -8 dB、`80` 为 -10 dB、`112` 为 -14 dB、`128` 为 -16 dB。正在运行的监控进程会在一秒内应用新值。
+
+使用 `sh tools/build.sh` 构建精简安装包，仓库图片和开发工具不会打入 ZIP。安装后重启以加载生成的音频配置。验证范围记录在仓库的 `docs/coloros-compatibility.md`。
 
 ## 许可证
 

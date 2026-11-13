@@ -1,8 +1,10 @@
 #!/system/bin/sh
 
 MODDIR=${0%/*}
+. "$MODDIR/coloros_compat.sh"
 APP_PROCESS=/system/bin/app_process64
 MEDIA_STRATEGY_ID=5
+MEDIA_VOLUME_MAX=160
 LEGACY_STRATEGY_ID=0
 STATE_DIR=/data/adb/plf110_earpiece_dual_speaker
 OFFSET_FILE="$STATE_DIR/earpiece_offset"
@@ -29,12 +31,34 @@ RCV_CH2_B="ADDA_DL_CH4 DL0_CH2"
 
 default_offset=0
 
+run_compat17() {
+    CLASSPATH="$MODDIR/audio_compat17.dex" \
+        "$APP_PROCESS" -Xmx64m /system/bin AudioCompat17 "$@"
+}
+
+init_audio_compat() {
+    COLOROS_MAJOR=$(coloros_major)
+    case "$COLOROS_MAJOR" in
+        16) return 0 ;;
+        17)
+            config=$(run_compat17 config) || return 1
+            set -- $config
+            [ "$#" -eq 2 ] || return 1
+            case "$1:$2" in *[!0-9:]*) return 1 ;; esac
+            MEDIA_STRATEGY_ID=$1
+            MEDIA_VOLUME_MAX=$2
+            [ "$MEDIA_VOLUME_MAX" -gt 0 ] || return 1
+            ;;
+        *) echo "Unsupported ColorOS version" >&2; return 1 ;;
+    esac
+}
+
 get_offset() {
     value=$(cat "$OFFSET_FILE" 2>/dev/null)
     case "$value" in
         ''|*[!0-9]*) value=$default_offset ;;
     esac
-    [ "$value" -le 160 ] || value=$default_offset
+    [ "$value" -le "$MEDIA_VOLUME_MAX" ] || value=$default_offset
     echo "$value"
 }
 
@@ -53,7 +77,7 @@ get_speaker_index() {
         ''|null|*[!0-9]*) return 1 ;;
     esac
     value=$((raw & 4095))
-    [ "$value" -ge 0 ] && [ "$value" -le 160 ] || return 1
+    [ "$value" -ge 0 ] && [ "$value" -le "$MEDIA_VOLUME_MAX" ] || return 1
     echo "$value"
 }
 
@@ -63,21 +87,31 @@ get_earpiece_index() {
         ''|null|*[!0-9]*) return 1 ;;
     esac
     value=$((raw & 4095))
-    [ "$value" -ge 0 ] && [ "$value" -le 160 ] || return 1
+    [ "$value" -ge 0 ] && [ "$value" -le "$MEDIA_VOLUME_MAX" ] || return 1
     echo "$value"
 }
 
 run_route() {
+    if [ "$COLOROS_MAJOR" = 17 ]; then
+        run_compat17 route "$MEDIA_STRATEGY_ID" "$1"
+        return $?
+    fi
     CLASSPATH="$MODDIR/strategy_route.dex" \
         "$APP_PROCESS" /system/bin StrategyRoute "$MEDIA_STRATEGY_ID" 1 "$1"
 }
 
 clear_legacy_route() {
+    # Strategy 0 is the MEDIA strategy on ColorOS 17, not a legacy override.
+    [ "$COLOROS_MAJOR" = 17 ] && return 0
     CLASSPATH="$MODDIR/strategy_route.dex" \
         "$APP_PROCESS" /system/bin StrategyRoute "$LEGACY_STRATEGY_ID" 1 clear
 }
 
 set_earpiece_volume() {
+    if [ "$COLOROS_MAJOR" = 17 ]; then
+        run_compat17 set 1 "$1"
+        return $?
+    fi
     CLASSPATH="$MODDIR/device_volume.dex" \
         "$APP_PROCESS" /system/bin DeviceVolume 1 "$1"
 }
@@ -283,7 +317,7 @@ sync_earpiece_volume() {
     speaker=$(get_speaker_index) || return 1
     offset=$(get_offset)
     target=$((speaker + offset))
-    [ "$target" -le 160 ] || target=160
+    [ "$target" -le "$MEDIA_VOLUME_MAX" ] || target=$MEDIA_VOLUME_MAX
 
     current=$(get_earpiece_index) || current=-1
     if [ "$current" = "$target" ]; then
@@ -302,7 +336,7 @@ restore_earpiece_volume() {
     case "$value" in
         ''|*[!0-9]*) return 0 ;;
     esac
-    [ "$value" -le 160 ] || return 0
+    [ "$value" -le "$MEDIA_VOLUME_MAX" ] || return 0
     set_earpiece_volume "$value"
     rm -f "$APPLIED_FILE"
 }
@@ -319,6 +353,8 @@ monitor_volume() {
     done
     rm -rf "$MONITOR_LOCK"
 }
+
+init_audio_compat || exit 1
 
 case "$1" in
     apply)
@@ -358,8 +394,11 @@ case "$1" in
     restore)
         set_earpiece_volume "$2"
         ;;
+    status)
+        echo "ColorOS=$COLOROS_MAJOR media_strategy=$MEDIA_STRATEGY_ID media_max=$MEDIA_VOLUME_MAX"
+        ;;
     *)
-        echo "usage: $0 {apply|sync|monitor|clear|restore INDEX}" >&2
+        echo "usage: $0 {apply|sync|monitor|clear|restore INDEX|status}" >&2
         exit 64
         ;;
 esac

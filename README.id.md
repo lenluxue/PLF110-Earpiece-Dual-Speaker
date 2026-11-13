@@ -1,12 +1,14 @@
-# PLF110 Earpiece/Speaker Stereo v2.4.7
+# PLF110 Earpiece/Speaker Stereo v2.5.0
 
 [English](README.md) | [简体中文](README.zh-CN.md) | Bahasa Indonesia
 
 ![Gambar proyek](assets/IMG_20261003_094440.jpg)
 
-Modul KernelSU/Magisk ini ditujukan untuk OnePlus PLF110 Android 16 yang telah di-root.
+Modul KernelSU/Magisk ini ditujukan untuk OnePlus PLF110 ColorOS 16 atau 17 yang telah di-root.
 
-Modul menetapkan `AUDIO_DEVICE_OUT_SPEAKER` dan `AUDIO_DEVICE_OUT_EARPIECE` ke strategi media 5, menjaga indeks media earpiece tetap mengikuti tombol volume media, dan mengatur amplifier pintar AW88265 agar memilih kanal I2S kanan. Spatializer vendor Oplus sengaja dinonaktifkan karena pada firmware ini dapat membuat HAL audio MediaTek crash; modul hanya memakai routing stereo langsung yang lebih stabil.
+Modul menetapkan `AUDIO_DEVICE_OUT_SPEAKER` dan `AUDIO_DEVICE_OUT_EARPIECE` ke strategi media, menjaga indeks media earpiece tetap mengikuti tombol volume media, dan mengatur amplifier pintar AW88265 agar memilih kanal I2S kanan.
+
+ColorOS 16 mempertahankan strategi 5, berkas DEX dan kebijakan audio sebelumnya. ColorOS 17 mencari strategi `STREAM_MUSIC` saat dijalankan (ID 0 pada PLF110_17.0.0.101) dan memakai Binder Stub firmware untuk memanggil `IAudioService.setDeviceVolume`. Saat boot, kebijakan ColorOS 17 dibuat dari firmware saat ini dengan hanya mengubah profil keluaran earpiece menjadi stereo; endpoint lain, rute, daftar fitur dan definisi spatializer tetap mengikuti firmware.
 
 Pasang berkas ZIP melalui KernelSU atau Magisk, lalu mulai ulang perangkat. Tombol aksi modul dapat mengaktifkan atau menonaktifkan rute speaker ganda tanpa perlu memulai ulang. Saat modul dihapus, rute tersebut dibersihkan dan indeks perangkat earpiece yang disimpan pada pemasangan pertama akan dipulihkan.
 
@@ -18,9 +20,11 @@ Perubahan tabel gain tetap dinonaktifkan karena HAL MediaTek mengalami crash saa
 
 Putar `左右声道测试.wav` pada volume media rendah. Nada 440 Hz pertama adalah kanal kiri; nada 880 Hz berikutnya adalah kanal kanan. Untuk keluaran terpisah, nada pertama seharusnya hanya terdengar dari earpiece dan nada kedua dari speaker bawah. Jika earpiece juga memainkan nada kedua, rute HAL sedang mencampur stereo menjadi mono dan memerlukan perubahan HAL/kebijakan terpisah.
 
-Untuk menyetel media saja, tulis offset numerik ke `/data/adb/plf110_earpiece_dual_speaker/earpiece_offset`, lalu tekan tombol aksi modul; offset bawaan adalah 160 langkah volume media.
+Untuk menyetel media saja, tulis offset numerik ke `/data/adb/plf110_earpiece_dual_speaker/earpiece_offset`, lalu tekan tombol aksi modul; offset bawaan adalah 0 langkah volume media.
 
 Untuk menyetel keseimbangan kenyaringan kiri/kanan tanpa membangun ulang modul, tulis bilangan bulat dari `0` hingga `720` ke `/data/adb/plf110_earpiece_dual_speaker/smartpa_attenuation`. Setiap langkah hanya menurunkan speaker bawah sebesar 0,125 dB; contohnya, `24` adalah -3 dB, `32` adalah -4 dB, `40` adalah -5 dB, `48` adalah -6 dB, `64` adalah -8 dB, `80` adalah -10 dB, `112` adalah -14 dB, dan `128` adalah -16 dB. Proses pemantau yang sedang berjalan akan menerapkan nilai baru dalam waktu satu detik.
+
+Buat ZIP modul ringkas dengan `sh tools/build.sh`. Gambar repositori dan alat pengembangan tidak disertakan. WAV pengujian dapat dibuat dengan `tools/make_channel_test.c`. Mulai ulang setelah pemasangan untuk memuat kebijakan audio. Cakupan pengujian tercatat di `docs/coloros-compatibility.md` dalam repositori.
 
 ## Lisensi
 
