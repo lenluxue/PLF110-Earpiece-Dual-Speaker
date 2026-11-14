@@ -57,4 +57,4 @@ Shell syntax validation and ZIP integrity checks also pass. The production Andro
 
 The current phone runs ColorOS 17. ColorOS 16 has source, binary and command-path regression coverage; a fresh ColorOS 16 boot was not performed. ColorOS 17 live routing and volume interfaces were tested, but the generated stereo policy requires installation and a reboot before channel separation can be verified audibly. No audio-server restart or phone reboot was performed by the agent.
 
-The local 2.5.1 build has not been published to GitHub. `update.json` continues describing the existing published 2.4.7 release until a release is published.
+`update.json` describes the latest official release and points KernelSU/Magisk to the GitHub release asset and repository changelog. Mirrored releases use the same installable ZIP.

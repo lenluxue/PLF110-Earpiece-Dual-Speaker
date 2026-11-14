@@ -1,6 +1,6 @@
 {
-  "version": "2.4.7",
-  "versionCode": 247,
-  "zipUrl": "https://github.com/lenluxue/PLF110-Earpiece-Dual-Speaker/releases/download/2.4.7/PLF110-Earpiece-Dual-Speaker-v2.4.7.zip",
-  "changelog": "Lower the default bottom-speaker volume by 2 dB, from -14 dB to -16 dB."
+  "version": "2.5.1",
+  "versionCode": 251,
+  "zipUrl": "https://github.com/lenluxue/PLF110-Earpiece-Dual-Speaker/releases/download/2.5.1/PLF110-Earpiece-Dual-Speaker-v2.5.1.zip",
+  "changelog": "https://raw.githubusercontent.com/lenluxue/PLF110-Earpiece-Dual-Speaker/main/CHANGELOG.md"
 }
