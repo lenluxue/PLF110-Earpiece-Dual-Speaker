@@ -1,4 +1,4 @@
-# PLF110 Earpiece/Speaker Stereo v2.5.0
+# PLF110 Earpiece/Speaker Stereo v2.5.1
 
 English | [简体中文](README.zh-CN.md) | [Bahasa Indonesia](README.id.md)
 

@@ -1,7 +1,7 @@
 #!/system/bin/sh
 
 ui_print " "
-ui_print "  PLF110 Earpiece/Speaker Stereo v2.5.0"
+ui_print "  PLF110 Earpiece/Speaker Stereo v2.5.1"
 ui_print " "
 
 device=$(getprop ro.product.device)
@@ -68,6 +68,9 @@ fi
 ui_print "- Gain table overlay disabled for MediaTek HAL stability"
 ui_print "- Reboot after installation"
 ui_print "- The module action button toggles the route immediately"
+if [ -f "$STATE_DIR/disabled" ]; then
+    ui_print "- Route is currently disabled; use module action once to enable it"
+fi
 
 set_perm_recursive "$MODPATH" 0 0 0755 0644
 set_perm "$MODPATH/customize.sh" 0 0 0755

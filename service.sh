@@ -2,6 +2,7 @@
 
 MODDIR=${0%/*}
 BINDIR="$MODDIR/bin"
+. "$MODDIR/coloros_compat.sh"
 STATE_DIR=/data/adb/plf110_earpiece_dual_speaker
 LOG="$STATE_DIR/service.log"
 mkdir -p "$STATE_DIR"
@@ -42,8 +43,17 @@ while [ "$(getprop sys.boot_completed)" != "1" ] && [ "$i" -lt 30 ]; do
     sleep 2
 done
 
-# Record the detected strategy and volume range before applying the route.
-sh "$BINDIR/audio_ctl.sh" status || exit 1
+# AudioService can exist before AudioPolicy's native strategy list is ready.
+# Keep the original ColorOS 16 behavior; retry the complete apply on ColorOS 17.
+COLOROS_MAJOR=$(coloros_major)
+MAX_APPLY_ATTEMPTS=6
+if [ "$COLOROS_MAJOR" = 17 ]; then
+    MAX_APPLY_ATTEMPTS=24
+    sh "$BINDIR/audio_ctl.sh" status || \
+        echo "[$(date '+%F %T')] audio strategy query not ready; retrying during apply"
+else
+    sh "$BINDIR/audio_ctl.sh" status || exit 1
+fi
 
 # Keep the gain-table overlay disabled; this firmware's parser crashes on it.
 if [ -x "$BINDIR/patch_gain.sh" ]; then
@@ -56,7 +66,12 @@ fi
 
 attempt=1
 applied=0
-while [ "$attempt" -le 6 ]; do
+while [ "$attempt" -le "$MAX_APPLY_ATTEMPTS" ]; do
+    if [ "$COLOROS_MAJOR" = 17 ] && [ -f "$STATE_DIR/disabled" ]; then
+        echo "[$(date '+%F %T')] disabled while waiting for audio initialization"
+        sh "$BINDIR/audio_ctl.sh" clear || true
+        exit 0
+    fi
     echo "[$(date '+%F %T')] apply attempt $attempt"
     if sh "$BINDIR/audio_ctl.sh" apply; then
         echo "[$(date '+%F %T')] stereo route active; earpiece=left, AW88265=right, bottom=-16 dB"
@@ -68,7 +83,7 @@ while [ "$attempt" -le 6 ]; do
 done
 
 if [ "$applied" -ne 1 ]; then
-    echo "[$(date '+%F %T')] failed after six attempts"
+    echo "[$(date '+%F %T')] failed after $MAX_APPLY_ATTEMPTS attempts"
     exit 1
 fi
 

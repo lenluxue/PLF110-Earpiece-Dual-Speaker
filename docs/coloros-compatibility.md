@@ -1,6 +1,6 @@
 # ColorOS 16 / 17 compatibility validation
 
-Version: 2.5.0, versionCode 250. Validated on 2026-11-14.
+Version: 2.5.1, versionCode 251. Validated on 2026-11-14.
 
 ## Implementation
 
@@ -11,6 +11,15 @@ Version: 2.5.0, versionCode 250. Validated on 2026-11-14.
 - ColorOS 17 copies the current firmware's earpiece policy files on each boot and changes only earpiece output `channelMasks` to stereo. Other attributes, routes, endpoints, feature lists and spatializer declarations remain unchanged. Missing or unsupported earpiece profiles fail preparation without mounting partial output.
 - Default attenuation remains 128 driver steps (-16 dB), and the default media offset remains 0.
 - The install ZIP excludes repository images, test artifacts and development tools.
+- The eight runtime helpers are grouped in `bin/`, with all entrypoint references and installation permissions updated.
+
+## 2.5.1 startup fix
+
+The installed 2.5.0 boot log reported `Cannot list audio strategies: -6` after loading the stereo earpiece policy. Its initial status check exited before the apply retry loop. The same installed helper returned `0 160` after boot, confirming the startup query was transient.
+
+ColorOS 17 now continues after an unsuccessful initial status query and retries the complete apply up to 24 times at five-second intervals. Disabling the route during that wait stops retries. ColorOS 16 retains its previous initialization behavior and six-apply retry limit.
+
+A full live apply was tested using an isolated copy and state directory while the installed stereo policy was active: route status 0, bottom attenuation 128, AW88265 register 0x06 readback 0x38e8, and earpiece volume synchronized to speaker index 30. The clear operation restored the original volume 43, amplifier selection and saved mixer values. The user's action-disabled marker was preserved. Audio service PIDs stayed 8424 and 8440 during this test.
 
 ## ColorOS 17 device evidence
 
@@ -28,7 +37,7 @@ Device: PLF110 / OP60F9L1. Build: `PLF110_17.0.0.101(CN01)`. ROM: `V17.0.0`. And
 
 ## Regression checks
 
-`python -m unittest discover -s tests -v` passes 9 checks:
+`python -m unittest discover -s tests -v` passes 15 checks:
 
 - Current ColorOS 17 XML contents, targeted modifications and idempotence.
 - XML comments, single-quoted attributes and same-line elements.
@@ -38,6 +47,9 @@ Device: PLF110 / OP60F9L1. Build: `PLF110_17.0.0.101(CN01)`. ROM: `V17.0.0`. And
 - ColorOS 16 route/volume helper command sequences match the baseline.
 - ColorOS 16 mounts the original files at the correct partition paths.
 - ColorOS 17 does not clear the media strategy as a legacy override.
+- Recovery from an initial strategy-query failure and subsequent transient apply failures.
+- Bounded retries on persistent failure and honoring disable during a retry.
+- Unchanged ColorOS 16 initialization behavior and six-apply retry limit; preservation of an existing action-disabled state.
 
 Shell syntax validation and ZIP integrity checks also pass. The production Android `/system/bin/awk` generated the same output as the test implementation on the current active policy.
 
@@ -45,4 +57,4 @@ Shell syntax validation and ZIP integrity checks also pass. The production Andro
 
 The current phone runs ColorOS 17. ColorOS 16 has source, binary and command-path regression coverage; a fresh ColorOS 16 boot was not performed. ColorOS 17 live routing and volume interfaces were tested, but the generated stereo policy requires installation and a reboot before channel separation can be verified audibly. No audio-server restart or phone reboot was performed by the agent.
 
-The local 2.5.0 build has not been published to GitHub. `update.json` continues describing the existing published 2.4.7 release until a release is published.
+The local 2.5.1 build has not been published to GitHub. `update.json` continues describing the existing published 2.4.7 release until a release is published.
