@@ -28,5 +28,5 @@ Buat ZIP modul ringkas dengan `sh tools/build.sh`. Gambar repositori dan alat pe
 
 ## Lisensi
 
-Proyek ini dilisensikan berdasarkan [PolyForm Noncommercial License 1.0.0](LICENSE).
+Kode asli proyek ini dilisensikan berdasarkan [GNU General Public License v2.0](LICENSE), hanya versi 2 (`GPL-2.0-only`).
 Beberapa berkas pihak ketiga yang disertakan tetap mengikuti pemberitahuan lisensi aslinya.

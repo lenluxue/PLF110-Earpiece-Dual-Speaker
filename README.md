@@ -78,5 +78,5 @@ the validation scope.
 
 ## License
 
-This project is licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE).
+The original code in this project is licensed under the [GNU General Public License v2.0 only](LICENSE) (`GPL-2.0-only`).
 Some included third-party files retain the license notices included with those files.

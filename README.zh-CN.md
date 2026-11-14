@@ -36,5 +36,5 @@ AW88265 的通道选择使用驱动定义的 `I2SCTRL1 (0x06)` 寄存器 `CHSEL`
 
 ## 许可证
 
-本项目采用 [PolyForm Noncommercial License 1.0.0](LICENSE) 许可。
+本项目的原创代码采用 [GNU General Public License v2.0](LICENSE) 许可，仅限第 2 版（`GPL-2.0-only`）。
 仓库中包含的部分第三方文件仍遵循其文件中附带的原有许可声明。
